@@ -3,3 +3,7 @@ _to_delete/
 .env
 .env.local
 node_modules/
+*.bak
+*.aep
+ReLook Workshop - Master Highlights_ok*.mp4
+21 CAD to Lit Production Render (Melb Production)/AI-Presentation-Live-at-the-Drive.pdf
