@@ -29,10 +29,10 @@ Open `index.html` in your browser or visit the GitHub Pages site to explore all 
 
 ```
 .
-├── index.html                    # Main showcase page
-├── 00 Best Prompts Library.md    # Copy-paste prompt reference
-├── 00 Cheat Sheets/              # Department guides
-└── 01-22 [Case Study Folders]/   # Complete case studies with assets
+├── index.html                      # Main showcase page
+├── 00 Best Prompts Library.md      # Copy-paste prompt reference
+├── 00-cheat-sheets/                # Department guides & prompt cheat sheets
+└── 01-22 [Case Study Folders]/     # Complete case studies with assets
 ```
 
 ## License & Attribution
