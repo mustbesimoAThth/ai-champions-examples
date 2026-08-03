@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLook Prompt Cheat Sheet — Sydney Events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: A4; margin: 1.5cm; }
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #1a1a2e;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .header .badges {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            align-items: flex-end;
+        }
+        .header .badge {
+            background: #1a1a2e;
+            color: white;
+            padding: 0.35rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .badge-alt { background: #4a4a6e !important; }
+        .subtitle {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .section {
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            padding: 0.4rem 0.8rem;
+            background: #f0f0f5;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            display: inline-block;
+        }
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+        .prompt-card {
+            border: 1px solid #e0e0e8;
+            border-radius: 8px;
+            padding: 0.75rem;
+            background: #fafafe;
+        }
+        .prompt-card .label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+            margin-bottom: 0.3rem;
+        }
+        .prompt-card .prompt {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1a1a2e;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.4;
+        }
+        .prompt-card .note {
+            font-size: 0.65rem;
+            color: #999;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+        .accent-pink .section-title { background: #fce4ec; color: #c2185b; }
+        .accent-purple .section-title { background: #ede7f6; color: #6a1b9a; }
+        .accent-blue .section-title { background: #e3f2fd; color: #1565c0; }
+        .accent-green .section-title { background: #e8f5e9; color: #2e7d32; }
+        .accent-orange .section-title { background: #fff3e0; color: #e65100; }
+        .accent-teal .section-title { background: #e0f2f1; color: #00695c; }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+        .tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #555;
+        }
+        .tip-icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            background: #1a1a2e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+        .footer {
+            border-top: 2px solid #e0e0e8;
+            padding-top: 0.75rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #999;
+        }
+        .print-btn {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .print-btn:hover { background: #2a2a4e; }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">Print This Cheat Sheet</button>
+
+    <div class="header">
+        <div>
+            <h1>ReLook Prompt Cheat Sheet</h1>
+            <p style="font-size: 0.9rem; color: #666; margin-top: 0.25rem;">Sydney Events</p>
+        </div>
+        <div class="badges">
+            <div class="badge">Events Dept</div>
+            <div class="badge badge-alt">Sydney</div>
+        </div>
+    </div>
+
+    <p class="subtitle">Proven prompt patterns for Sydney event visualization — from Randwick to the Harbour. Copy these, swap the specifics, and generate. Platform: relook.hthsystems.com.au</p>
+
+    <!-- Colour & Branding -->
+    <div class="section accent-pink">
+        <div class="section-title">Colour & Sponsor Branding</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Umbrella / Furniture Swap</div>
+                <div class="prompt">"Change all umbrellas to <strong>[colour]</strong> and match the table cloths"</div>
+                <div class="note">Works for: parasols, chair cushions, bar stools, ottomans — used for Randwick racing carnival</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Sponsor Rebrand</div>
+                <div class="prompt">"Replace all signage and branding with <strong>[brand name]</strong> in their brand colours <strong>[colour 1]</strong> and <strong>[colour 2]</strong>"</div>
+                <div class="note">Upload a logo image as reference 2 for best results — great for pitch pivots</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Full Colour Scheme</div>
+                <div class="prompt">"Change the entire colour palette to <strong>[colour]</strong> and <strong>[colour]</strong>, including furniture, draping, and accents"</div>
+                <div class="note">Show a client 3 colourway options from the same venue shot in minutes</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Structure / Marquee Re-skin</div>
+                <div class="prompt">"Change the marquee exterior from <strong>[current colour / material]</strong> to <strong>[new brand colour / white stretch]</strong>"</div>
+                <div class="note">Works on: pavilion exteriors, marquee covers, temporary walls, fencing wraps</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Atmosphere & Time of Day -->
+    <div class="section accent-purple">
+        <div class="section-title">Atmosphere & Time of Day</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Golden Hour / Sunset</div>
+                <div class="prompt">"Show this venue at <strong>golden hour</strong> with a dramatic sunset sky and warm ambient lighting"</div>
+                <div class="note">Turns a flat Randwick or Homebush site visit into a stunning evening pitch</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Night Event</div>
+                <div class="prompt">"Convert to <strong>nighttime</strong> with festoon lighting, warm uplights on the structure, and a twilight sky"</div>
+                <div class="note">Add "Sydney Harbour Bridge glow in the distance" for outdoor harbour events</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Weather / Mood</div>
+                <div class="prompt">"Show this with <strong>bright blue Sydney summer sky</strong>, sharp shadows, and a vibrant outdoor atmosphere"</div>
+                <div class="note">NSW summer light is crisp — emphasise it for racing and tennis events</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Season / Occasion</div>
+                <div class="prompt">"Show this venue in <strong>spring racing colours</strong> — warm afternoon light, floral accents, and a dressed crowd atmosphere"</div>
+                <div class="note">Useful for Everest, Flight Stakes, Golden Rose at Randwick pitch decks</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout & Furniture -->
+    <div class="section accent-blue">
+        <div class="section-title">Layout & Furniture Changes</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Furniture Swap (Multi-Ref)</div>
+                <div class="prompt">"Replace the <strong>[chairs / tables / stools]</strong> with the ones shown in <strong>reference image 2</strong>"</div>
+                <div class="note">Upload a Folio product photo as reference — verified HTH stock placed directly into the scene</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Add Event Elements</div>
+                <div class="prompt">"Add a <strong>[bar area / DJ booth / stage / picnic area]</strong> to the <strong>[left / right / back / foreground]</strong> of the space"</div>
+                <div class="note">Be specific about placement and scale for best results — reference a Folio item if possible</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Dress the Venue</div>
+                <div class="prompt">"Add <strong>round banquet tables with white linen, floral centrepieces, and bentwood chairs</strong> to fill the space"</div>
+                <div class="note">Best for: empty venue → dressed gala transformation — works great for ICC Sydney ballroom shots</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Remove Clutter</div>
+                <div class="prompt">"Remove the <strong>[scaffolding / barriers / equipment / security fencing]</strong> and show a clean finished setup"</div>
+                <div class="note">Clean up pre-event site photos for client-facing presentations</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sydney Venue Specifics -->
+    <div class="section accent-teal">
+        <div class="section-title">Sydney Venue Context — Quick Tricks</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Harbour / Water Views</div>
+                <div class="prompt">"Add a <strong>Sydney Harbour backdrop with the Bridge and Opera House</strong> visible in the background at dusk"</div>
+                <div class="note">Powerful for outdoor waterfront event pitches — use inpainting to preserve the foreground</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Racing Carnival Crowd</div>
+                <div class="prompt">"Add a well-dressed crowd in <strong>spring racing attire — hats, fascinators, suit jackets</strong> — interacting naturally with the space"</div>
+                <div class="note">Used for Everest and Randwick racing carnival client renders</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Tennis Venue Setup</div>
+                <div class="prompt">"Show this outdoor entertainment area <strong>dressed for a premium tennis hospitality event</strong> — white and green palette, sponsor signage, tiered seating in background"</div>
+                <div class="note">Refs: HTH United Tennis Sydney — court-side hospitality setups</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Corporate Outdoor Terrace</div>
+                <div class="prompt">"Show this terrace dressed as a <strong>corporate cocktail event at sunset</strong> — high tables, bar service, city skyline backdrop"</div>
+                <div class="note">Works for Darling Harbour, Barangaroo, and SMC Conference Centre pitches</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Power Tips -->
+    <div class="section accent-green">
+        <div class="section-title">Power Tips</div>
+        <div class="tips-grid">
+            <div class="tip">
+                <div class="tip-icon">1</div>
+                <div><strong>Use "Enhancer Ready"</strong> — it auto-expands your prompt with professional photography terms. Your 5-word prompt becomes a 50-word masterpiece.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">2</div>
+                <div><strong>Multi-reference is your friend.</strong> Upload the venue photo + the HTH product photo you want placed in it. Up to 5 references total.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">3</div>
+                <div><strong>Iterate, don't start over.</strong> If V1 is 80% right, refine with a follow-up prompt. Don't re-upload and start from scratch — each version builds on the last.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">4</div>
+                <div><strong>Use Premium 2K</strong> for anything going into a client deck or proposal. Use Fast model for quick internal exploration.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">5</div>
+                <div><strong>Be specific about what stays.</strong> "Change the umbrellas to navy but keep everything else the same" prevents unwanted changes across the scene.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">6</div>
+                <div><strong>Studio Enhanced</strong> adds professional camera angles and composition. Great for hero shots — skip it if you need the exact original framing.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>Harry The Hirer &bull; ReLook Platform &bull; relook.hthsystems.com.au</span>
+        <span>AI Champion: Jess &bull; Events Sydney</span>
+    </div>
+</body>
+</html>

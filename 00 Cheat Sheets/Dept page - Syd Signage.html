@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLooK | Sydney Signage — Complete Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        /* ── Slides ── */
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        /* ── Progress bar ── */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        /* ── Nav dots ── */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.4);
+            border-color: #f59e0b;
+        }
+        .nav-dot-label {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .nav-dot:hover .nav-dot-label { opacity: 1; }
+
+        /* ── Comparison slider ── */
+        .comparison-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .comparison-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .comparison-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            cursor: ew-resize;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* ── Glass card ── */
+        .glass-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        /* ── Gradient text ── */
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-teal {
+            background: linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── Feature cards ── */
+        .feature-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* ── Prompt blocks ── */
+        .prompt-block {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #d1d5db;
+            position: relative;
+            overflow: hidden;
+        }
+        .prompt-block::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, #f59e0b, #ef4444);
+            border-radius: 3px 0 0 3px;
+        }
+        .prompt-block strong { color: #fbbf24; }
+        .prompt-block .label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #f59e0b;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        /* ── Step numbers ── */
+        .step-number {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        /* ── Image showcase ── */
+        .img-showcase {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .img-showcase img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ── Particles ── */
+        .particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+    <base target="_blank">
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="particles" id="particles"></div>
+<div class="nav-dots" id="navDots"></div>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="0" data-label="Title">
+    <div class="absolute inset-0 z-0">
+        <img src="./result-A.jpg" class="w-full h-full object-cover opacity-25" alt="" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/80 to-black"></div>
+    </div>
+
+    <div class="relative z-10 text-center max-w-5xl">
+        <div class="mb-6 inline-block px-4 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium tracking-wider uppercase">
+            Harry The Hirer &bull; Sydney Signage
+        </div>
+        <h1 class="font-display text-7xl md:text-9xl font-bold mb-6 leading-none">
+            <span class="block gradient-text">ReLooK</span>
+            <span class="block text-3xl md:text-5xl mt-4 font-light text-gray-400">Signage Visualisation</span>
+        </h1>
+        <p class="text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
+            AI-powered signage visuals. From booth line drawings<br>
+            to branded panel renders — in seconds.
+        </p>
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-400">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Signage Team Sydney</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">relook.hthsystems.com.au</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 2 — THE CHALLENGE
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="1" data-label="The Challenge">
+    <div class="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber">The Challenge</h2>
+            <p class="text-xl text-gray-300 leading-relaxed">
+                Signage teams work from <span class="text-white font-semibold">line drawings and flat layouts</span> — but clients need to see the finished product. Swapping logos, testing colour palettes, and previewing panel graphics on a booth structure takes hours in traditional design tools.
+            </p>
+            <div class="space-y-4 mt-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">Logo swaps and brand iterations are slow in Illustrator/Photoshop</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">Clients can't visualise signage from a line drawing alone</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">Testing graphics on booth panels requires 3D mockups or physical samples</p>
+                </div>
+            </div>
+        </div>
+        <div class="relative">
+            <div class="glass-card p-8 space-y-6 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span class="text-sm text-gray-400">Traditional Workflow</span>
+                    <span class="text-red-400 text-sm">Hours per iteration</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="h-2 bg-white/10 rounded w-full"></div>
+                    <div class="h-2 bg-white/10 rounded w-4/5"></div>
+                    <div class="h-2 bg-white/10 rounded w-3/5"></div>
+                </div>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 pt-4">
+                    <span class="text-sm text-gray-400">With ReLooK</span>
+                    <span class="text-green-400 text-sm">Under 60 seconds</span>
+                </div>
+                <div class="h-28 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
+                    <span class="text-2xl font-display font-bold gradient-text-amber">Sketch &rarr; Brand &rarr; Done</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     PART 1 — LOGO & ELEMENT SWAPS
+     ════════════════════════════════════════════════════════════════ -->
+
+
+<!-- SLIDE 3 — LOGO & ELEMENT SWAP TECHNIQUE -->
+<section class="slide" data-slide="2" data-label="Logo & Element Swap">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold tracking-wider uppercase mb-4">Part 1 &mdash; Signage Swaps</div>
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Logo & Element Swap</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">Upload a signage photo + a reference image. Tell the AI what to swap. The brand, mascot, or element is composited in — photorealistically.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-amber-400">01</div>
+                <h3 class="font-display text-xl font-bold">Upload Scene + Reference</h3>
+                <p class="text-gray-400 text-sm">Image 1 = the signage you want to modify. Image 2 = the logo, mascot, or element you want placed in.</p>
+                <div class="mt-3 px-3 py-1.5 bg-amber-500/10 rounded-full text-amber-400 text-xs font-semibold inline-block">IMAGE 1 = SCENE</div>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-red-400">02</div>
+                <h3 class="font-display text-xl font-bold">Describe the Swap</h3>
+                <p class="text-gray-400 text-sm">"Change the logo in the 1st pic with the logo in the 2nd pic" — or "remove the surfboard and swap with the mascot in the 2nd pic."</p>
+                <div class="mt-3 px-3 py-1.5 bg-red-500/10 rounded-full text-red-400 text-xs font-semibold inline-block">NATURAL LANGUAGE</div>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-purple-400">03</div>
+                <h3 class="font-display text-xl font-bold">Instant Result</h3>
+                <p class="text-gray-400 text-sm">Premium 2K renders the composite in seconds. Lighting, perspective, and shadows match automatically. No Photoshop layers needed.</p>
+                <div class="mt-3 px-3 py-1.5 bg-purple-500/10 rounded-full text-purple-400 text-xs font-semibold inline-block">PHOTOREALISTIC</div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+            <div class="prompt-block">
+                <span class="label">Prompt A — Logo Swap</span>
+                "Change the <strong>logo</strong> in the first pic with the <strong>logo in the 2nd pic</strong>"<br>
+                <span class="text-gray-500 text-xs mt-1 block">2 images &bull; Premium 2K &bull; 16:9 Widescreen</span>
+            </div>
+            <div class="prompt-block">
+                <span class="label">Prompt B — Element Swap</span>
+                "Remove the <strong>surfboard</strong> in first pic and swap with the <strong>mascot in the 2nd pic</strong>"<br>
+                <span class="text-gray-500 text-xs mt-1 block">2 images &bull; Premium 2K &bull; 16:9 Widescreen</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 4 — BEFORE / AFTER: Logo Swap + Mascot Swap -->
+<section class="slide" data-slide="3" data-label="Before / After">
+    <div class="max-w-6xl w-full space-y-10">
+        <div class="text-center mb-2">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber mb-4">Before &rarr; After</h2>
+            <p class="text-xl text-gray-400">Sydney Signage — AI-Powered Signage Swaps</p>
+        </div>
+
+        <!-- Comparison 1: Sketch → Branded Panel Graphics (Prompt G) -->
+        <div>
+            <div class="comparison-container mx-auto" id="comparison1">
+                <img src="./result-G1.jpg" class="comparison-image" alt="After: Booth with branded panel graphics" />
+                <div class="comparison-overlay" id="overlay1">
+                    <img src="./booth-linedrawing.png" class="comparison-image" alt="Before: Booth line drawing" style="width: 900px; max-width: none;" />
+                </div>
+                <div class="slider-handle" id="handle1">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5"><path d="M8 5l-5 7 5 7"/><path d="M16 5l5 7-5 7"/></svg>
+                </div>
+            </div>
+            <div class="flex justify-center gap-8 text-sm text-gray-500 mt-3">
+                <span>&#8592; Line Drawing</span>
+                <span>ReLooK — Branded Panel Graphics &#8594;</span>
+            </div>
+        </div>
+
+        <!-- Comparison 2: Neutral Render → McAfee Branded Render -->
+        <div>
+            <div class="comparison-container mx-auto" id="comparison2">
+                <img src="./result-F.jpg" class="comparison-image" alt="After: McAfee branded booth render" />
+                <div class="comparison-overlay" id="overlay2">
+                    <img src="./result-H.jpg" class="comparison-image" alt="Before: Neutral booth render" style="width: 900px; max-width: none;" />
+                </div>
+                <div class="slider-handle" id="handle2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5"><path d="M8 5l-5 7 5 7"/><path d="M16 5l5 7-5 7"/></svg>
+                </div>
+            </div>
+            <div class="flex justify-center gap-8 text-sm text-gray-500 mt-3">
+                <span>&#8592; Neutral Render</span>
+                <span>ReLooK — Branded Booth Render &#8594;</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 5 — LIGHTING & SCENE CONTROL -->
+<section class="slide" data-slide="4" data-label="Scene Control">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Lighting & Scene Control</h2>
+            <p class="text-xl text-gray-400">Change time of day, remove backgrounds, swap furniture — all from a single photo</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-start">
+            <div class="space-y-4">
+                <div class="prompt-block">
+                    <span class="label">Prompt C — Lighting / Time Change</span>
+                    "Change <strong>lighting to midday</strong>"<br>
+                    <span class="text-gray-500 text-xs mt-1 block">Shifts the entire scene from night to daylight — shadows, sky, reflections all update</span>
+                </div>
+                <div class="prompt-block">
+                    <span class="label">Prompt D — Background Removal</span>
+                    "Remove the <strong>background</strong> — keep the scene intact"<br>
+                    <span class="text-gray-500 text-xs mt-1 block">Isolates signage element with transparency — ready for composite into any venue</span>
+                </div>
+                <div class="prompt-block">
+                    <span class="label">Prompt E — Furniture Swap</span>
+                    "Swap the <strong>chairs in 1st pic</strong> with the <strong>chair in 2nd pic</strong>"<br>
+                    <span class="text-gray-500 text-xs mt-1 block">2-image method — pull specific furniture from a reference photo into your booth</span>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="img-showcase" style="height: 220px;">
+                    <img src="./result-C.jpg" alt="Lighting changed to midday" />
+                </div>
+                <div class="img-showcase" style="height: 220px;">
+                    <img src="./result-E.jpg" alt="Furniture swapped on Australia booth" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     PART 2 — SKETCH TO RENDER
+     ════════════════════════════════════════════════════════════════ -->
+
+
+<!-- SLIDE 6 — SKETCH → 3D RENDER -->
+<section class="slide" data-slide="5" data-label="Sketch to Render">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <div class="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold tracking-wider uppercase mb-4">Part 2 &mdash; Sketch to Render</div>
+            <h2 class="font-display text-5xl font-bold gradient-text-blue mb-4">Line Drawing &rarr; 3D Booth</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">Upload a booth line drawing. Describe the brand, materials, and finish. ReLooK transforms it into a photorealistic 3D render — or a clean neutral base for branding later.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card space-y-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="step-number bg-amber-500/20 text-amber-400">F</div>
+                    <h3 class="font-display text-xl font-bold">Branded Render</h3>
+                </div>
+                <div class="prompt-block">
+                    <span class="label">Prompt F — Sketch to Branded Booth</span>
+                    "Photorealistic 3D render of a modern exhibition booth based on a conceptual sketch. Transform the sketch into a fully built structure with <strong>realistic geometry, clean edges, and accurate proportions</strong>."<br><br>
+                    Booth design: A <strong>McAfee</strong> branded expo stand with angular architecture, illuminated fascia, and a reception counter at the front. Integrated lighting within edges and signage. Demo pods and display areas inside the booth. Clean platform flooring with <strong>carpet finish</strong>.<br><br>
+                    Materials: <strong>Matte white laminated panels, brushed aluminum framing, soft LED strip lighting</strong>
+                </div>
+                <div class="img-showcase" style="height: 240px;">
+                    <img src="./result-F.jpg" alt="McAfee branded booth render" />
+                </div>
+            </div>
+
+            <div class="glass-card space-y-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="step-number bg-blue-500/20 text-blue-400">H</div>
+                    <h3 class="font-display text-xl font-bold">Neutral Base</h3>
+                </div>
+                <div class="prompt-block" style="--grad-start: #3b82f6; --grad-end: #8b5cf6;">
+                    <span class="label" style="color: #60a5fa;">Prompt H — Sketch to Neutral Render</span>
+                    "Generate the <strong>rendered version</strong> of these line drawings, <strong>neutral colour palette</strong>"<br><br>
+                    Creates a clean, unbranded booth render — a blank canvas ready for client branding as a second step. Faster to pivot when the brief changes.
+                </div>
+                <div class="img-showcase" style="height: 240px;">
+                    <img src="./result-H.jpg" alt="Neutral booth render from line drawing" />
+                </div>
+                <div class="text-center mt-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 rounded-full text-blue-400 text-xs font-semibold">
+                        Pro tip: Generate neutral first, then apply client branding
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 7 — MULTI-IMAGE PANEL GRAPHICS -->
+<section class="slide" data-slide="6" data-label="Panel Graphics">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-4xl font-bold gradient-text-teal mb-3">Multi-Image Panel Graphics</h2>
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">The signage superpower: upload your booth structure + up to 4 graphic designs. Tell the AI which graphic goes on which panel. Instant branded signage.</p>
+        </div>
+
+        <div class="glass-card space-y-5">
+            <div class="prompt-block">
+                <span class="label">Prompt G — Apply Graphics to Named Panels</span>
+                "Add the graphics on <strong>panels A, B, C</strong> of the first pic using the <strong>image 1, 2 and 3</strong>"<br>
+                <span class="text-gray-500 text-xs mt-2 block">4 reference images: Image 1 = booth structure with labelled panels. Images 2–4 = the graphics for each panel. Premium 2K.</span>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mt-4">
+                <div class="glass-card text-center space-y-3 p-4">
+                    <div class="text-3xl font-display font-bold text-amber-400">A</div>
+                    <p class="text-gray-400 text-sm">Flat panel — left wall. Upload your first graphic design as a reference image.</p>
+                </div>
+                <div class="glass-card text-center space-y-3 p-4">
+                    <div class="text-3xl font-display font-bold text-red-400">B</div>
+                    <p class="text-gray-400 text-sm">Feature wall — centre tower. Upload your second graphic. The AI wraps it to the panel shape.</p>
+                </div>
+                <div class="glass-card text-center space-y-3 p-4">
+                    <div class="text-3xl font-display font-bold text-purple-400">C</div>
+                    <p class="text-gray-400 text-sm">Rear wall — archway surround. Upload your third graphic. Perspective and lighting auto-match.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="img-showcase" style="height: 320px;">
+                <img src="./result-G1.jpg" alt="Panel graphics result variation 1" />
+            </div>
+            <div class="img-showcase" style="height: 320px;">
+                <img src="./result-G2.jpg" alt="Panel graphics result variation 2" />
+            </div>
+        </div>
+        <div class="flex justify-center gap-8 text-sm text-gray-500">
+            <span>Variation 1</span>
+            <span>Variation 2 — same prompt, different generation</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 8 — MASTER PROMPT TEMPLATE -->
+<section class="slide" data-slide="7" data-label="Master Template">
+    <div class="max-w-5xl w-full space-y-6">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-4xl font-bold gradient-text-amber mb-3">Signage Master Prompt Template</h2>
+            <p class="text-lg text-gray-400">A reusable structure for any signage render — swap in your client, materials, and graphics</p>
+        </div>
+
+        <div class="glass-card space-y-5">
+            <div class="space-y-4">
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-blue-500/20 text-blue-400">1</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Start with Structure</h4>
+                        <p class="text-gray-400 text-sm">"Photorealistic 3D render of a modern exhibition booth based on <strong class="text-blue-300">this conceptual sketch</strong>. Transform the sketch into a fully built structure with realistic geometry, clean edges, and accurate proportions."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-amber-500/20 text-amber-400">2</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Define the Brand</h4>
+                        <p class="text-gray-400 text-sm">"A <strong class="text-amber-300">[CLIENT NAME]</strong> branded expo stand with <strong class="text-amber-300">[angular / curved / open]</strong> architecture, illuminated fascia, and a reception counter at the front."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-red-500/20 text-red-400">3</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Specify Materials</h4>
+                        <p class="text-gray-400 text-sm">"Materials: <strong class="text-red-300">[matte white laminated panels]</strong>, <strong class="text-red-300">[brushed aluminium framing]</strong>, <strong class="text-red-300">[soft LED strip lighting]</strong>."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-purple-500/20 text-purple-400">4</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Apply Graphics (Multi-Image)</h4>
+                        <p class="text-gray-400 text-sm">"Add the graphics on <strong class="text-purple-300">panels A, B, C</strong> of the first pic using the <strong class="text-purple-300">image 1, 2 and 3</strong>."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-green-500/20 text-green-400">5</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Refine & Iterate</h4>
+                        <p class="text-gray-400 text-sm">"Change <strong class="text-green-300">lighting to midday</strong>" / "Swap the <strong class="text-green-300">chairs with the chair in 2nd pic</strong>" / "Remove the <strong class="text-green-300">background — keep the scene intact</strong>"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-2">
+            <p class="text-gray-500 text-sm">V1 = structure &bull; V2 = branding &bull; V3 = graphics &bull; V4 = lighting &bull; V5 = furniture — each builds on the last</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 9 — SIGNAGE USE CASES -->
+<section class="slide" data-slide="8" data-label="Signage Uses">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Signage Use Cases</h2>
+            <p class="text-xl text-gray-400">8 proven prompt patterns — every one tested on real signage jobs</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-lg">&#9998;</div>
+                    <h3 class="font-display text-xl font-bold">Logo & Brand Swaps</h3>
+                </div>
+                <p class="text-gray-400">Upload a signage photo and a new logo. The AI composites it in with correct perspective, lighting, and scale. Test five brands on the same storefront in five minutes.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-lg">&#9670;</div>
+                    <h3 class="font-display text-xl font-bold">Sketch &rarr; Photorealistic</h3>
+                </div>
+                <p class="text-gray-400">Transform booth line drawings into fully rendered 3D signage — branded or neutral. Even rough sketches work. The AI interprets intent, not line quality.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-lg">&#9783;</div>
+                    <h3 class="font-display text-xl font-bold">Multi-Panel Graphics</h3>
+                </div>
+                <p class="text-gray-400">Label your panels A, B, C on the booth structure. Upload graphic designs as separate reference images. The AI maps each graphic to its panel — perspective and lighting auto-match.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 font-bold text-lg">&#9788;</div>
+                    <h3 class="font-display text-xl font-bold">Lighting & Scene Tweaks</h3>
+                </div>
+                <p class="text-gray-400">Change time of day, remove backgrounds for compositing, swap furniture from reference photos. Fine-tune a render without regenerating the whole scene.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 10 — GET STARTED
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="9" data-label="Get Started">
+    <div class="max-w-4xl w-full text-center space-y-8">
+        <h2 class="font-display text-5xl font-bold gradient-text mb-4">Get Started</h2>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            The platform is live. Whether you're swapping a logo on a storefront or rendering a full booth with branded panels — the workflow starts the same way.
+        </p>
+
+        <div class="glass-card max-w-xl mx-auto text-left space-y-4 mt-8">
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">1</div>
+                <p class="text-gray-300">Log in at <span class="text-white font-semibold">relook.hthsystems.com.au</span></p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">2</div>
+                <p class="text-gray-300"><strong class="text-white">Quick swaps:</strong> Upload scene photo + reference &rarr; describe the swap</p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">3</div>
+                <p class="text-gray-300"><strong class="text-white">Full renders:</strong> Upload line drawing &rarr; paste the Master Prompt template</p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">4</div>
+                <p class="text-gray-300"><strong class="text-white">Panel graphics:</strong> Upload booth + graphic designs &rarr; label panels A, B, C</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-sm font-bold">5</div>
+                <p class="text-gray-300">Premium 2K for client-facing &bull; Fast mode for internal checks</p>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mt-8">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Signage Team Sydney</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Harry The Hirer &bull; relook.hthsystems.com.au</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCRIPTS
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Particles ──
+const particlesEl = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 20 + 's';
+    p.style.animationDuration = (15 + Math.random() * 10) + 's';
+    particlesEl.appendChild(p);
+}
+
+// ── Navigation dots with labels ──
+const slides = document.querySelectorAll('.slide');
+const navDots = document.getElementById('navDots');
+slides.forEach((slide, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+
+    const label = document.createElement('span');
+    label.className = 'nav-dot-label';
+    label.textContent = slide.dataset.label || '';
+    dot.appendChild(label);
+
+    dot.addEventListener('click', () => {
+        slides[i].scrollIntoView({ behavior: 'smooth' });
+    });
+    navDots.appendChild(dot);
+});
+
+// ── Scroll progress & active dot ──
+window.addEventListener('scroll', () => {
+    const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = scrollPercent + '%';
+
+    const dots = document.querySelectorAll('.nav-dot');
+    slides.forEach((slide, i) => {
+        const rect = slide.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+            dots.forEach(d => d.classList.remove('active'));
+            dots[i].classList.add('active');
+        }
+    });
+});
+
+// ── GSAP animations ──
+gsap.registerPlugin(ScrollTrigger);
+document.querySelectorAll('.feature-card').forEach(card => {
+    gsap.to(card, {
+        opacity: 1, y: 0, duration: 0.8,
+        scrollTrigger: { trigger: card, start: 'top 80%' }
+    });
+});
+
+// ── Comparison slider ──
+function initSlider(containerId, overlayId, handleId) {
+    const container = document.getElementById(containerId);
+    const overlay = document.getElementById(overlayId);
+    const handle = document.getElementById(handleId);
+    if (!container) return;
+
+    let isDragging = false;
+    const updateSlider = (x) => {
+        const rect = container.getBoundingClientRect();
+        let pos = ((x - rect.left) / rect.width) * 100;
+        pos = Math.max(0, Math.min(100, pos));
+        overlay.style.width = pos + '%';
+        handle.style.left = pos + '%';
+    };
+
+    handle.addEventListener('mousedown', () => isDragging = true);
+    container.addEventListener('mousemove', (e) => { if (isDragging) updateSlider(e.clientX); });
+    document.addEventListener('mouseup', () => isDragging = false);
+
+    handle.addEventListener('touchstart', () => isDragging = true);
+    container.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e.touches[0].clientX); });
+    document.addEventListener('touchend', () => isDragging = false);
+
+    container.addEventListener('click', (e) => updateSlider(e.clientX));
+}
+initSlider('comparison1', 'overlay1', 'handle1');
+initSlider('comparison2', 'overlay2', 'handle2');
+</script>
+</body>
+</html>

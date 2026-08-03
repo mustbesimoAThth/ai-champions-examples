@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLooK | Melbourne Exhibition — Complete Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        /* ── Slides ── */
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        /* ── Progress bar ── */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        /* ── Nav dots ── */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.4);
+            border-color: #f59e0b;
+        }
+        .nav-dot-label {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .nav-dot:hover .nav-dot-label { opacity: 1; }
+
+        /* ── Comparison slider ── */
+        .comparison-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .comparison-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .comparison-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            cursor: ew-resize;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* ── Glass card ── */
+        .glass-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        /* ── Gradient text ── */
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── Feature cards ── */
+        .feature-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* ── Prompt blocks ── */
+        .prompt-block {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #d1d5db;
+            position: relative;
+            overflow: hidden;
+        }
+        .prompt-block::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, #f59e0b, #ef4444);
+            border-radius: 3px 0 0 3px;
+        }
+        .prompt-block strong { color: #fbbf24; }
+        .prompt-block .label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #f59e0b;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        /* ── Step numbers ── */
+        .step-number {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        /* ── Chapter divider ── */
+        .chapter-divider {
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .chapter-divider::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        }
+
+        /* ── Particles ── */
+        .particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+    <base target="_blank">
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="particles" id="particles"></div>
+<div class="nav-dots" id="navDots"></div>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="0" data-label="Title">
+    <div class="absolute inset-0 z-0">
+        <img src="./before-venue.jpg" class="w-full h-full object-cover opacity-25" alt="" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/80 to-black"></div>
+    </div>
+
+    <div class="relative z-10 text-center max-w-5xl">
+        <div class="mb-6 inline-block px-4 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium tracking-wider uppercase">
+            Harry The Hirer &bull; Melbourne Exhibition
+        </div>
+        <h1 class="font-display text-7xl md:text-9xl font-bold mb-6 leading-none">
+            <span class="block gradient-text">ReLooK</span>
+            <span class="block text-3xl md:text-5xl mt-4 font-light text-gray-400">Exhibition Visualisation</span>
+        </h1>
+        <p class="text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
+            AI-powered exhibition visuals. From booth sketches<br>
+            to venue placement — in seconds.
+        </p>
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-400">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Igor &bull; AI Champion</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Exhibition Team Melbourne</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 2 — THE CHALLENGE
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="1" data-label="The Challenge">
+    <div class="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber">The Challenge</h2>
+            <p class="text-xl text-gray-300 leading-relaxed">
+                Exhibition teams work from <span class="text-white font-semibold">flat drawings and technical specs</span> — clients don't visualize the same way. Whether it's furniture swaps, booth placement in a venue, or materials and colours, the gap between your design intent and the client's imagination costs time and revisions.
+            </p>
+            <div class="space-y-4 mt-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">Clients can't visualise booth layout from 2D floor plans</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">3D renders take days and cost thousands</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">Hard to show colour and material variations quickly</p>
+                </div>
+            </div>
+        </div>
+        <div class="relative">
+            <div class="glass-card p-8 space-y-6 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span class="text-sm text-gray-400">Traditional Workflow</span>
+                    <span class="text-red-400 text-sm">Days + $$$$</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="h-2 bg-white/10 rounded w-full"></div>
+                    <div class="h-2 bg-white/10 rounded w-4/5"></div>
+                    <div class="h-2 bg-white/10 rounded w-3/5"></div>
+                </div>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 pt-4">
+                    <span class="text-sm text-gray-400">With ReLooK</span>
+                    <span class="text-green-400 text-sm">Under 60 seconds</span>
+                </div>
+                <div class="h-28 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
+                    <span class="text-2xl font-display font-bold gradient-text-amber">Sketch &rarr; Describe &rarr; Done</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 3 — SKETCH & PHOTO TECHNIQUES
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="2" data-label="Sketch & Photo">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold tracking-wider uppercase mb-4">Part 1 &mdash; Booth Visualisation</div>
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Sketch & Photo Techniques</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">Upload a booth photo, hand sketch, or line drawing. Tell the AI what to change. Get premium 2K visuals in seconds.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-amber-400">01</div>
+                <h3 class="font-display text-xl font-bold">Upload</h3>
+                <p class="text-gray-400 text-sm">Booth photo, hand sketch, or line drawing. JPG or PNG — ReLooK reads the composition.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-red-400">02</div>
+                <h3 class="font-display text-xl font-bold">Describe</h3>
+                <p class="text-gray-400 text-sm">Tell the AI what to change. Furniture, colours, materials, branding. Hex codes, hex codes work.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-purple-400">03</div>
+                <h3 class="font-display text-xl font-bold">Generate</h3>
+                <p class="text-gray-400 text-sm">Premium 2K for client-facing renders. Fast for internal checks and iterations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 4 — BEFORE / AFTER (two comparisons) -->
+<section class="slide" data-slide="3" data-label="Before / After">
+    <div class="max-w-6xl w-full space-y-10">
+        <div class="text-center mb-2">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber mb-4">Before &rarr; After</h2>
+            <p class="text-xl text-gray-400">Melbourne Exhibition — Real Results</p>
+        </div>
+
+        <!-- Comparison 1: Furniture Swap -->
+        <div>
+            <div class="comparison-container mx-auto" id="comparison1">
+                <img src="./after-amw-booth.jpg" class="comparison-image" alt="After: ReLooK furniture swap" />
+                <div class="comparison-overlay" id="overlay1">
+                    <img src="./before-amw-booth.jpg" class="comparison-image" alt="Before: Original AMTIL booth" style="width: 900px; max-width: none;" />
+                </div>
+                <div class="slider-handle" id="handle1">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5"><path d="M8 5l-5 7 5 7"/><path d="M16 5l5 7-5 7"/></svg>
+                </div>
+            </div>
+            <div class="flex justify-center gap-8 text-sm text-gray-500 mt-3">
+                <span>&#8592; Original AMTIL Booth</span>
+                <span>ReLooK — Furniture Swap &#8594;</span>
+            </div>
+        </div>
+
+        <!-- Comparison 2: Venue Placement -->
+        <div>
+            <div class="comparison-container mx-auto" id="comparison2">
+                <img src="./after-venue-render.jpg" class="comparison-image" alt="After: Illumina booth in venue" />
+                <div class="comparison-overlay" id="overlay2">
+                    <img src="./before-venue.jpg" class="comparison-image" alt="Before: Empty Royal Exhibition Building" style="width: 900px; max-width: none;" />
+                </div>
+                <div class="slider-handle" id="handle2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5"><path d="M8 5l-5 7 5 7"/><path d="M16 5l5 7-5 7"/></svg>
+                </div>
+            </div>
+            <div class="flex justify-center gap-8 text-sm text-gray-500 mt-3">
+                <span>&#8592; Royal Exhibition Building — Empty</span>
+                <span>ReLooK — Booth Placed in Venue &#8594;</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 5 — BOOTH USE CASES -->
+<section class="slide" data-slide="4" data-label="Booth Uses">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Booth Use Cases</h2>
+            <p class="text-xl text-gray-400">What ReLooK transforms for exhibition teams</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold">&#9830;</div>
+                    <h3 class="font-display text-xl font-bold">Furniture & Colour Swaps</h3>
+                </div>
+                <p class="text-gray-400">Swap stools, chairs, tables. Change colours via hex codes. Instant variations — show clients the full palette without rendering each variant separately.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold">&#8644;</div>
+                    <h3 class="font-display text-xl font-bold">Venue Placement</h3>
+                </div>
+                <p class="text-gray-400">Drop booth concepts into real venue photos — Royal Exhibition Building, MCEC, ICC, any space. Let clients see their booth in context.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">&#9813;</div>
+                    <h3 class="font-display text-xl font-bold">Brand Swap</h3>
+                </div>
+                <p class="text-gray-400">Same booth structure, different client branding. Pitch to Illumina, then Nikon, then Zeiss — reuse the structure, change the brand messaging.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 font-bold">&#9708;</div>
+                    <h3 class="font-display text-xl font-bold">Material Interpolation</h3>
+                </div>
+                <p class="text-gray-400">2-image method: booth structure from Image 1, finishes & materials from Image 2. Combine your design with a reference material to get exact look.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 6 — ADVANCED TECHNIQUES
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="5" data-label="Advanced Tech">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <div class="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold tracking-wider uppercase mb-4">Part 2 &mdash; Sketch Inpaint & Multi-Image</div>
+            <h2 class="font-display text-5xl font-bold gradient-text-blue mb-4">Advanced Techniques</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">Sketch inpaint for adding elements. Multi-image for combining references. Iterate from structure to final venue render.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-amber-400">01</div>
+                <h3 class="font-display text-xl font-bold">Sketch Inpaint</h3>
+                <p class="text-gray-400 text-sm">Draw pink shapes on renders to mark where to add elements — hanging rigs, signage, banners. The AI sees the sketch and places the element exactly there.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-red-400">02</div>
+                <h3 class="font-display text-xl font-bold">Multi-Image</h3>
+                <p class="text-gray-400 text-sm">Combine booth sketch + material reference + venue photo in one prompt. Structure locks from Image 1, textures from Image 2, environment from Image 3.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-purple-400">03</div>
+                <h3 class="font-display text-xl font-bold">Iterate</h3>
+                <p class="text-gray-400 text-sm">V1 structure → V2 colour → V3 branding → V4 in venue. Each iteration refines from the previous — rapid exploration path to final render.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 7 — SKETCH INPAINT DEMO -->
+<section class="slide" data-slide="6" data-label="Sketch Inpaint">
+    <div class="max-w-5xl w-full space-y-6">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-4xl font-bold gradient-text-amber mb-3">Sketch Inpaint Demo: Adding a Hanging Rig</h2>
+            <p class="text-lg text-gray-400">How drawing pink shapes tells the AI where to add elements</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div class="glass-card space-y-3">
+                <h4 class="font-display font-bold text-lg text-amber-300">Your Sketch (Input)</h4>
+                <img src="./sketch-pink-rig.jpeg" alt="Pink sketch showing rig placement" class="w-full rounded-lg border border-white/10" />
+                <p class="text-sm text-gray-400">Pink lines mark where the hanging rig should go. The AI reads the shape and position.</p>
+            </div>
+            <div class="glass-card space-y-3">
+                <h4 class="font-display font-bold text-lg text-red-300">Final Render (Output)</h4>
+                <img src="./after-venue-rig.jpg" alt="Rig added to venue render" class="w-full rounded-lg border border-white/10" />
+                <p class="text-sm text-gray-400">Realistic hanging rig generated exactly where the pink sketch indicated. In seconds.</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="prompt-block">
+                <span class="label">Prompt 1</span>
+                <strong>Move the camera 10 meters up</strong> to get a higher vantage point of the booth. Show the full rigging overhead and the structural ceiling context.
+            </div>
+            <div class="prompt-block">
+                <span class="label">Prompt 2</span>
+                <strong>Change the branding in the rig banner</strong> of the 1st pic with the illustration of the 2nd pic. Match the visual style and placement exactly.
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 8 — MULTI-IMAGE EXAMPLES -->
+<section class="slide" data-slide="7" data-label="Multi-Image">
+    <div class="max-w-5xl w-full space-y-6">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-4xl font-bold gradient-text-blue mb-3">Multi-Image Combinations</h2>
+            <p class="text-lg text-gray-400">Combine up to 3 reference images into one powerful render</p>
+        </div>
+
+        <div class="glass-card space-y-5">
+            <div class="space-y-4">
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-amber-500/20 text-amber-400">1</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Booth Structure</h4>
+                        <p class="text-gray-400 text-sm">"Add <strong class="text-amber-300">two stools from the 2nd pic</strong> and a <strong class="text-amber-300">bar table from the 3rd pic</strong> into the 1st pic (booth layout)."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-red-500/20 text-red-400">2</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Material Reference</h4>
+                        <p class="text-gray-400 text-sm">Image 1 = your booth sketch. Image 2 = reference photo of materials (timber, steel, fabric). The AI applies the finish to your structure.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-purple-500/20 text-purple-400">3</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Venue Context</h4>
+                        <p class="text-gray-400 text-sm">Image 3 = Real venue photo (lighting, floor, architecture). The AI places your booth into that real environment with matching light and atmosphere.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-2">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 rounded-full text-blue-400 text-sm font-medium">
+                <span>&#9888;</span> Template: "Add [item] from pic 2 into pic 1, lit like pic 3"
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 9 — EXHIBITION USE CASES -->
+<section class="slide" data-slide="8" data-label="Exhibition Uses">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Exhibition Use Cases</h2>
+            <p class="text-xl text-gray-400">Where ReLooK fits into your exhibition workflow</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-lg">&#128305;</div>
+                    <h3 class="font-display text-xl font-bold">Client Concept Approval</h3>
+                </div>
+                <p class="text-gray-400">Photorealistic renders from your sketches and line drawings. Clients sign off faster when they see the booth lit, finished, and in context.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-lg">&#9900;</div>
+                    <h3 class="font-display text-xl font-bold">Pitch Deck Hero Images</h3>
+                </div>
+                <p class="text-gray-400">Before/after comparisons and venue renders for your proposals. Strong visuals convince faster than CAD drawings.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-lg">&#9888;</div>
+                    <h3 class="font-display text-xl font-bold">Rapid Colour Variations</h3>
+                </div>
+                <p class="text-gray-400">Generate 3–5 different colourways from one booth render. Show the client options in under 10 minutes.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 font-bold text-lg">&#10003;</div>
+                    <h3 class="font-display text-xl font-bold">Production Pack Visuals</h3>
+                </div>
+                <p class="text-gray-400">Hero images alongside technical specs. Clients get both vision and detail in the same production document.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 10 — GET STARTED
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="9" data-label="Get Started">
+    <div class="max-w-4xl w-full text-center space-y-8">
+        <h2 class="font-display text-5xl font-bold gradient-text mb-4">Get Started</h2>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            The platform is live and ready. From furniture swaps to full venue placement — the workflow starts the same way.
+        </p>
+
+        <div class="glass-card max-w-xl mx-auto text-left space-y-4 mt-8">
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">1</div>
+                <p class="text-gray-300">Log in at <span class="text-white font-semibold">relook.hthsystems.com.au</span></p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">2</div>
+                <p class="text-gray-300">Upload booth photo, sketch, or line drawing</p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">3</div>
+                <p class="text-gray-300">Try the <strong class="text-white">"Enhancer Ready"</strong> toggle for detailed prompts</p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">4</div>
+                <p class="text-gray-300">Premium 2K for client-facing &bull; Fast for internal checks</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-sm font-bold">5</div>
+                <p class="text-gray-300">Bring experiments to your next session — iterate live</p>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mt-8">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Igor &bull; AI Champion</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Harry The Hirer Exhibition Melbourne</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCRIPTS
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Particles ──
+const particlesEl = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 20 + 's';
+    p.style.animationDuration = (15 + Math.random() * 10) + 's';
+    particlesEl.appendChild(p);
+}
+
+// ── Navigation dots with labels ──
+const slides = document.querySelectorAll('.slide');
+const navDots = document.getElementById('navDots');
+slides.forEach((slide, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+
+    const label = document.createElement('span');
+    label.className = 'nav-dot-label';
+    label.textContent = slide.dataset.label || '';
+    dot.appendChild(label);
+
+    dot.addEventListener('click', () => {
+        slides[i].scrollIntoView({ behavior: 'smooth' });
+    });
+    navDots.appendChild(dot);
+});
+
+// ── Scroll progress & active dot ──
+window.addEventListener('scroll', () => {
+    const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = scrollPercent + '%';
+
+    const dots = document.querySelectorAll('.nav-dot');
+    slides.forEach((slide, i) => {
+        const rect = slide.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+            dots.forEach(d => d.classList.remove('active'));
+            dots[i].classList.add('active');
+        }
+    });
+});
+
+// ── GSAP animations ──
+gsap.registerPlugin(ScrollTrigger);
+document.querySelectorAll('.feature-card').forEach(card => {
+    gsap.to(card, {
+        opacity: 1, y: 0, duration: 0.8,
+        scrollTrigger: { trigger: card, start: 'top 80%' }
+    });
+});
+
+// ── Comparison slider ──
+function initSlider(containerId, overlayId, handleId) {
+    const container = document.getElementById(containerId);
+    const overlay = document.getElementById(overlayId);
+    const handle = document.getElementById(handleId);
+    if (!container) return;
+
+    let isDragging = false;
+    const updateSlider = (x) => {
+        const rect = container.getBoundingClientRect();
+        let pos = ((x - rect.left) / rect.width) * 100;
+        pos = Math.max(0, Math.min(100, pos));
+        overlay.style.width = pos + '%';
+        handle.style.left = pos + '%';
+    };
+
+    handle.addEventListener('mousedown', () => isDragging = true);
+    container.addEventListener('mousemove', (e) => { if (isDragging) updateSlider(e.clientX); });
+    document.addEventListener('mouseup', () => isDragging = false);
+
+    handle.addEventListener('touchstart', () => isDragging = true);
+    container.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e.touches[0].clientX); });
+    document.addEventListener('touchend', () => isDragging = false);
+
+    container.addEventListener('click', (e) => updateSlider(e.clientX));
+}
+initSlider('comparison1', 'overlay1', 'handle1');
+initSlider('comparison2', 'overlay2', 'handle2');
+</script>
+</body>
+</html>

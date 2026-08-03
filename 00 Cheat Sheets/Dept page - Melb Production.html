@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLooK | Melbourne Production - AI Visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.3);
+            border-color: #f59e0b;
+        }
+
+        .comparison-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .comparison-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .comparison-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            cursor: ew-resize;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 1200px;
+        }
+        .masonry-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+        .masonry-item:hover {
+            transform: translateY(-5px);
+        }
+        .masonry-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .masonry-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 1.5rem 1rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .ui-showcase {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.02);
+        }
+        .ui-showcase img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .feature-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="particles" id="particles"></div>
+<div class="nav-dots" id="navDots"></div>
+
+<!-- Slide 1: Title -->
+<section class="slide" data-slide="0">
+    <div class="absolute inset-0 z-0">
+        <img src="./generated_1773881095266.jpg" class="w-full h-full object-cover opacity-30" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black"></div>
+    </div>
+
+    <div class="relative z-10 text-center max-w-5xl">
+        <div class="mb-6 inline-block px-4 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium tracking-wider uppercase">
+            Harry The Hirer &bull; Melbourne Production
+        </div>
+        <h1 class="font-display text-7xl md:text-9xl font-bold mb-6 leading-none">
+            <span class="block gradient-text">ReLooK</span>
+            <span class="block text-4xl md:text-6xl mt-4 font-light text-gray-400">Production Division</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
+            AI-powered production visualisation.<br>
+            From Vectorworks drawings to lit, dressed renders in seconds.
+        </p>
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-400">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Paul &bull; AI Champion</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Production Team</span>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 2: The Production Challenge -->
+<section class="slide" data-slide="1">
+    <div class="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber">The Production Challenge</h2>
+            <p class="text-xl text-gray-300 leading-relaxed">
+                Production teams work from <span class="text-white font-semibold">technical CAD drawings</span> that clients can't always read. Bridging the gap between a Vectorworks plan and <span class="text-white font-semibold">what the client imagines</span> is where projects stall.
+            </p>
+            <div class="space-y-4 mt-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-amber-500 mt-2"></div>
+                    <p class="text-gray-400">Clients need to visualise lighting before approving rigging plans</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-red-500 mt-2"></div>
+                    <p class="text-gray-400">Technical drawings don't convey atmosphere or finished look</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
+                    <p class="text-gray-400">Production packs need realistic renders alongside technical specs</p>
+                </div>
+            </div>
+        </div>
+        <div class="relative">
+            <div class="glass-card p-8 space-y-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span class="text-sm text-gray-400">Traditional Workflow</span>
+                    <span class="text-red-400 text-sm">Days of 3D rendering</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="h-2 bg-white/10 rounded w-full"></div>
+                    <div class="h-2 bg-white/10 rounded w-4/5"></div>
+                    <div class="h-2 bg-white/10 rounded w-3/5"></div>
+                </div>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 pt-4">
+                    <span class="text-sm text-gray-400">With ReLooK</span>
+                    <span class="text-green-400 text-sm">45 seconds</span>
+                </div>
+                <div class="h-32 bg-gradient-to-br from-amber-500/20 to-red-500/20 rounded-lg flex items-center justify-center">
+                    <span class="text-3xl font-display font-bold gradient-text-amber">Draw → Describe → Done</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 3: The Technique — Sketch Inpaint on CAD -->
+<section class="slide" data-slide="2">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-8">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Sketch Inpaint on Technical Drawings</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">Upload your Vectorworks export. Draw pink arrows where lights should go. Tell the AI what you want. Get a production-ready visual.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-amber-400">01</div>
+                <h3 class="font-display text-xl font-bold">Upload CAD</h3>
+                <p class="text-gray-400 text-sm">Export from Vectorworks as JPEG — plan view, ISO, or side elevation. ReLook reads the geometry.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-red-400">02</div>
+                <h3 class="font-display text-xl font-bold">Sketch It</h3>
+                <p class="text-gray-400 text-sm">Draw pink arrows for light positions, green zones for boundaries. Colour-code your intent — the AI reads both.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-purple-400">03</div>
+                <h3 class="font-display text-xl font-bold">Describe It</h3>
+                <p class="text-gray-400 text-sm">"Generate light beams where the arrows are to illuminate the green grid — remove the sketch marks." Done.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 4: Before & After Comparison -->
+<section class="slide" data-slide="3">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber mb-4">Before &rarr; After</h2>
+            <p class="text-xl text-gray-400">Melbourne International EV Autoshow — Polestar display at MCEC</p>
+        </div>
+
+        <div class="comparison-container mx-auto" id="comparison1">
+            <img src="./v 2 generated_1773882494200.jpg" class="comparison-image" alt="After: With lighting" />
+            <div class="comparison-overlay" id="overlay1">
+                <img src="./generated_1773881095266.jpg" class="comparison-image" alt="Before: CAD with sketch" style="width: 900px; max-width: none;" />
+            </div>
+            <div class="slider-handle" id="handle1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5"><path d="M8 5l-5 7 5 7"/><path d="M16 5l5 7-5 7"/></svg>
+            </div>
+        </div>
+        <div class="flex justify-center gap-8 text-sm text-gray-500">
+            <span>&#8592; V1: Initial light beams</span>
+            <span>V2: Refined beam zones &#8594;</span>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 5: Use Cases Grid -->
+<section class="slide" data-slide="4">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Production Use Cases</h2>
+            <p class="text-xl text-gray-400">Where ReLook fits into the production workflow</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold">&#9788;</div>
+                    <h3 class="font-display text-xl font-bold">Lighting Visualisation</h3>
+                </div>
+                <p class="text-gray-400">Add realistic light beams to CAD drawings. Define zones, control spill, show clients exactly what the lighting design will look like — before a single fixture is hung.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold">&#9674;</div>
+                    <h3 class="font-display text-xl font-bold">Rigging & Truss Previews</h3>
+                </div>
+                <p class="text-gray-400">Swap truss finishes (Silver HD44 vs Black HD34), add draping, visualise flying elements — all from the Vectorworks drawing without going back to 3D software.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">&#8644;</div>
+                    <h3 class="font-display text-xl font-bold">CAD &harr; Realistic Conversion</h3>
+                </div>
+                <p class="text-gray-400">Turn flat technical drawings into photorealistic renders for client decks. Or go the other way — generate clean 2D elevations from site photos for documentation.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 font-bold">&#10003;</div>
+                    <h3 class="font-display text-xl font-bold">Production Pack Visuals</h3>
+                </div>
+                <p class="text-gray-400">Generate hero images for production packs that sit alongside your technical specs. Clients see the vision and the detail — in the same document.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 6: Platform & Next Steps -->
+<section class="slide" data-slide="5">
+    <div class="max-w-4xl w-full text-center space-y-8">
+        <h2 class="font-display text-5xl font-bold gradient-text mb-4">Get Started</h2>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            The platform is live and ready for the Production team. Start with a real project — export a Vectorworks drawing, sketch your lighting intent, and see what ReLook can do.
+        </p>
+
+        <div class="glass-card max-w-xl mx-auto text-left space-y-4 mt-8">
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">1</div>
+                <p class="text-gray-300">Log in at <span class="text-white font-semibold">relook.hthsystems.com.au</span></p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">2</div>
+                <p class="text-gray-300">Upload a Vectorworks export or site photo</p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">3</div>
+                <p class="text-gray-300">Use the Prompt Cheat Sheet for proven production patterns</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">4</div>
+                <p class="text-gray-300">Bring your experiments to the next session</p>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mt-8">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">AI Champion: Paul</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Harry The Hirer Productions</span>
+        </div>
+    </div>
+</section>
+
+<script>
+// Particles
+const particlesEl = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 20 + 's';
+    p.style.animationDuration = (15 + Math.random() * 10) + 's';
+    particlesEl.appendChild(p);
+}
+
+// Navigation dots
+const slides = document.querySelectorAll('.slide');
+const navDots = document.getElementById('navDots');
+slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => {
+        slides[i].scrollIntoView({ behavior: 'smooth' });
+    });
+    navDots.appendChild(dot);
+});
+
+// Scroll progress & active dot
+window.addEventListener('scroll', () => {
+    const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = scrollPercent + '%';
+
+    const dots = document.querySelectorAll('.nav-dot');
+    slides.forEach((slide, i) => {
+        const rect = slide.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+            dots.forEach(d => d.classList.remove('active'));
+            dots[i].classList.add('active');
+        }
+    });
+});
+
+// GSAP animations
+gsap.registerPlugin(ScrollTrigger);
+document.querySelectorAll('.feature-card').forEach(card => {
+    gsap.to(card, {
+        opacity: 1, y: 0, duration: 0.8,
+        scrollTrigger: { trigger: card, start: 'top 80%' }
+    });
+});
+
+// Comparison slider
+function initSlider(containerId, overlayId, handleId) {
+    const container = document.getElementById(containerId);
+    const overlay = document.getElementById(overlayId);
+    const handle = document.getElementById(handleId);
+    if (!container) return;
+
+    let isDragging = false;
+    const updateSlider = (x) => {
+        const rect = container.getBoundingClientRect();
+        let pos = ((x - rect.left) / rect.width) * 100;
+        pos = Math.max(0, Math.min(100, pos));
+        overlay.style.width = pos + '%';
+        handle.style.left = pos + '%';
+    };
+
+    handle.addEventListener('mousedown', () => isDragging = true);
+    container.addEventListener('mousemove', (e) => { if (isDragging) updateSlider(e.clientX); });
+    document.addEventListener('mouseup', () => isDragging = false);
+
+    handle.addEventListener('touchstart', () => isDragging = true);
+    container.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e.touches[0].clientX); });
+    document.addEventListener('touchend', () => isDragging = false);
+
+    container.addEventListener('click', (e) => updateSlider(e.clientX));
+}
+initSlider('comparison1', 'overlay1', 'handle1');
+</script>
+</body>
+</html>

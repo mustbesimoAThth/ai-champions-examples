@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLooK | Melbourne Custom Build - AI Visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #0a0a0a; 
+            color: white; 
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6, #3b82f6);
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+        
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.3);
+            border-color: #ec4899;
+        }
+        
+        .comparison-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .comparison-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .comparison-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            cursor: ew-resize;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .glass-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-pink {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 1200px;
+        }
+        .masonry-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+        .masonry-item:hover {
+            transform: translateY(-5px);
+        }
+        .masonry-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .masonry-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 1.5rem 1rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .ui-showcase {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.02);
+        }
+        .ui-showcase img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .feature-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="particles" id="particles"></div>
+
+<div class="nav-dots" id="navDots"></div>
+
+<!-- Slide 1: Title -->
+<section class="slide" data-slide="0">
+    <div class="absolute inset-0 z-0">
+        <img src="./20260111-DSC05897.jpg" class="w-full h-full object-cover opacity-30" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black"></div>
+    </div>
+    
+    <div class="relative z-10 text-center max-w-5xl">
+        <div class="mb-6 inline-block px-4 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium tracking-wider uppercase">
+            Harry The Hirer • Melbourne Custom Build
+        </div>
+        <h1 class="font-display text-7xl md:text-9xl font-bold mb-6 leading-none">
+            <span class="block gradient-text">ReLooK</span>
+            <span class="block text-4xl md:text-6xl mt-4 font-light text-gray-400">Custom Build Division</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
+            AI-powered visualization for permanent and semi-permanent structures.<br>
+            From concept to construction documentation in seconds.
+        </p>
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-400">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Thomas • AI Champion</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Custom Build Team</span>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 2: The Custom Build Challenge -->
+<section class="slide" data-slide="1">
+    <div class="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+            <h2 class="font-display text-5xl font-bold gradient-text-pink">The Custom Build Challenge</h2>
+            <p class="text-xl text-gray-300 leading-relaxed">
+                Custom builds require <span class="text-white font-semibold">architectural precision</span> and <span class="text-white font-semibold">client confidence</span> before breaking ground. Traditional renders take weeks and revisions are costly.
+            </p>
+            <div class="space-y-4 mt-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-pink-500 mt-2"></div>
+                    <p class="text-gray-400">Permanent structures need accurate material representation</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
+                    <p class="text-gray-400">Client approvals require photorealistic previews</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+                    <p class="text-gray-400">Design iterations must be rapid and cost-effective</p>
+                </div>
+            </div>
+        </div>
+        <div class="relative">
+            <div class="glass-card p-8 space-y-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span class="text-sm text-gray-400">Traditional Workflow</span>
+                    <span class="text-red-400 text-sm">2-3 weeks</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="h-2 bg-white/10 rounded w-full"></div>
+                    <div class="h-2 bg-white/10 rounded w-4/5"></div>
+                    <div class="h-2 bg-white/10 rounded w-3/5"></div>
+                </div>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 pt-4">
+                    <span class="text-sm text-gray-400">With ReLooK</span>
+                    <span class="text-green-400 text-sm">45 seconds</span>
+                </div>
+                <div class="h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center">
+                    <span class="text-4xl">⚡</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 3: AI Concepts vs Reality -->
+<section class="slide" data-slide="2">
+    <div class="max-w-6xl w-full">
+        <div class="text-center mb-12">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Concept to Reality</h2>
+            <p class="text-gray-400">AI-generated iterations (V1 → V4) alongside completed Melbourne builds</p>
+        </div>
+        
+        <div class="masonry-grid">
+            <div class="masonry-item aspect-[4/3]">
+                <img src="./V1 generated_1773982377200.jpg" alt="AI Concept V1">
+                <div class="masonry-label">AI Concept V1 • Pavilion Design</div>
+            </div>
+            <div class="masonry-item aspect-[4/3] row-span-2">
+                <img src="./20260122-DSC07099.jpg" alt="Real Build - Outdoor Venue">
+                <div class="masonry-label text-green-400">Completed Build • Outdoor Venue (Real)</div>
+            </div>
+            <div class="masonry-item aspect-[4/3]">
+                <img src="./V2 VRC-2918.jpg" alt="AI Concept V2">
+                <div class="masonry-label">AI Concept V2 • VRC Iteration</div>
+            </div>
+            <div class="masonry-item aspect-[4/3]">
+                <img src="./VRC-2918.jpg" alt="VRC Real">
+                <div class="masonry-label text-blue-400">VRC Venue • Racing Carnival (Real)</div>
+            </div>
+            <div class="masonry-item aspect-[4/3]">
+                <img src="./V3 VRC-3648.jpg" alt="AI Concept V3">
+                <div class="masonry-label">AI Concept V3 • Structure Variation</div>
+            </div>
+            <div class="masonry-item aspect-[4/3] col-span-2">
+                <img src="./Derby day-3088.jpg" alt="Derby Day">
+                <div class="masonry-label text-purple-400">Derby Day • Premium Activation (Real)</div>
+            </div>
+            <div class="masonry-item aspect-[4/3]">
+                <img src="./V4 20260122-DSC07099.jpg" alt="AI Concept V4">
+                <div class="masonry-label">AI Concept V4 • Final Render</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 4: Client Revision Chain -->
+<section class="slide" data-slide="3">
+    <div class="max-w-6xl w-full">
+        <div class="text-center mb-10">
+            <div class="inline-block px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-sm font-medium mb-4">
+                Real Client Workflow
+            </div>
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">The Revision Chain</h2>
+            <p class="text-gray-400">How a single photo becomes a client-approved concept in three prompts</p>
+        </div>
+
+        <!-- Step 1: Element Swap -->
+        <div class="space-y-8">
+            <div class="glass-card flex flex-col md:flex-row gap-6 items-center border-l-4 border-pink-500">
+                <div class="flex-shrink-0 w-full md:w-1/3">
+                    <div class="aspect-video rounded-xl overflow-hidden">
+                        <img src="./V1 generated_1773982377200.jpg" class="w-full h-full object-cover" alt="V1 Result">
+                    </div>
+                </div>
+                <div class="flex-1 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs bg-pink-500/20 text-pink-400 px-3 py-1 rounded-full font-bold">STEP 1 — ELEMENT SWAP</span>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <p class="text-sm text-gray-500 mb-1 font-mono">Prompt:</p>
+                        <p class="text-white font-mono text-sm">"change the stools of the 1st pic with the stool in the 2nd pic"</p>
+                    </div>
+                    <p class="text-gray-400 text-sm">Multi-reference mode (2/5 images). ReLook pulls the gold bar stools from one photo and places them into the VRC pavilion interior. Premium 2K model.</p>
+                </div>
+            </div>
+
+            <!-- Step 2: Sketch Inpaint -->
+            <div class="glass-card flex flex-col md:flex-row gap-6 items-center border-l-4 border-purple-500">
+                <div class="flex-shrink-0 w-full md:w-1/3">
+                    <div class="aspect-video rounded-xl overflow-hidden">
+                        <img src="./V2 VRC-2918.jpg" class="w-full h-full object-cover" alt="V2 Result">
+                    </div>
+                </div>
+                <div class="flex-1 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full font-bold">STEP 2 — SKETCH INPAINT</span>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <p class="text-sm text-gray-500 mb-1 font-mono">Prompt:</p>
+                        <p class="text-white font-mono text-sm">"raise the height of the curved wall as per the pink sketch"</p>
+                    </div>
+                    <p class="text-gray-400 text-sm">Draw directly on the image with pink overlay to indicate structural changes. The AI interprets your sketch as architectural intent — no 3D modelling needed.</p>
+                </div>
+            </div>
+
+            <!-- Step 3: Material Change -->
+            <div class="glass-card flex flex-col md:flex-row gap-6 items-center border-l-4 border-blue-500">
+                <div class="flex-shrink-0 w-full md:w-1/3">
+                    <div class="aspect-video rounded-xl overflow-hidden">
+                        <img src="./V3 VRC-3648.jpg" class="w-full h-full object-cover" alt="V3 Result">
+                    </div>
+                </div>
+                <div class="flex-1 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full font-bold">STEP 3 — MATERIAL FINISH</span>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <p class="text-sm text-gray-500 mb-1 font-mono">Prompt:</p>
+                        <p class="text-white font-mono text-sm">"change all the metal finishing (background and base object) to black metal matte"</p>
+                    </div>
+                    <p class="text-gray-400 text-sm">Global material swap across the entire scene. One prompt changes every metal surface from gold to matte black — instant client revision without re-rendering.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <div class="inline-flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10">
+                <span class="text-gray-400 text-sm">Total time for 3 revisions:</span>
+                <span class="text-white font-display font-bold text-lg">~2 minutes</span>
+                <span class="text-gray-600 text-sm">vs. 2-3 weeks traditional</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 5: Interactive Comparison -->
+<section class="slide" data-slide="4">
+    <div class="max-w-5xl w-full text-center">
+        <h2 class="font-display text-4xl font-bold mb-8">Spot the Difference</h2>
+        <p class="text-gray-400 mb-8">Drag to compare: Completed Build vs. AI Generated Concept</p>
+        
+        <div class="comparison-container mx-auto" id="comparison">
+            <img src="./V2 VRC-2918.jpg" class="comparison-image" alt="AI Generated">
+            <div class="comparison-overlay" id="overlay">
+                <img src="./VRC-2918.jpg" class="comparison-image" alt="Real Build" style="width: 200%;">
+            </div>
+            <div class="slider-handle" id="handle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </div>
+            <div class="absolute top-4 left-4 bg-black/50 backdrop-blur px-3 py-1 rounded text-sm font-bold">REAL BUILD</div>
+            <div class="absolute top-4 right-4 bg-purple-500/50 backdrop-blur px-3 py-1 rounded text-sm font-bold">AI GENERATED</div>
+        </div>
+        
+        <div class="mt-8 flex justify-center gap-8 text-sm">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-white">4K</div>
+                <div class="text-gray-500">Resolution</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-white">&lt;45s</div>
+                <div class="text-gray-500">Gen Time</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-white">99%</div>
+                <div class="text-gray-500">Material Accuracy</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 6: The Platform in Action (UI Screenshots) -->
+<section class="slide" data-slide="5">
+    <div class="max-w-6xl w-full">
+        <div class="text-center mb-12">
+            <h2 class="font-display text-5xl font-bold mb-4">The ReLooK Interface</h2>
+            <p class="text-gray-400">Actual platform screenshots showing multi-image reference workflow and inpainting</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="ui-showcase">
+                <img src="./S1 Screenshot 2026-03-20 at 3.54.05 pm.png" alt="ReLook UI - References">
+                <div class="p-4 border-t border-white/10">
+                    <h3 class="font-bold mb-2">Multi-Reference Workflow</h3>
+                    <p class="text-sm text-gray-400">Upload multiple reference images (2/5 shown) and swap elements between them using natural language prompts.</p>
+                </div>
+            </div>
+            
+            <div class="ui-showcase">
+                <img src="./S2 Screenshot 2026-03-20 at 3.56.29 pm.png" alt="ReLook UI - Inpainting">
+                <div class="p-4 border-t border-white/10">
+                    <h3 class="font-bold mb-2">Precision Inpainting</h3>
+                    <p class="text-sm text-gray-400">Sketch directly on images to indicate modifications (pink arrows showing height adjustments on curved walls).</p>
+                </div>
+            </div>
+            
+            <div class="ui-showcase">
+                <img src="./S3 Screenshot 2026-03-20 at 4.01.00 pm.png" alt="ReLook UI - Material Change">
+                <div class="p-4 border-t border-white/10">
+                    <h3 class="font-bold mb-2">Material Finishing</h3>
+                    <p class="text-sm text-gray-400">Change metal finishes, textures, and surfaces instantly. "Change all metal finishing to black metal matte."</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 text-sm text-gray-400">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                Premium 2K Model Active • 999999/day quota
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 7: Features for Custom Build -->
+<section class="slide" data-slide="6">
+    <div class="max-w-6xl w-full">
+        <div class="text-center mb-16">
+            <h2 class="font-display text-5xl font-bold mb-4">Built for Custom Build</h2>
+            <p class="text-gray-400">Specialized tools for permanent structure visualization</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="feature-card glass-card border-t-4 border-pink-500">
+                <div class="text-3xl mb-4">🎨</div>
+                <h3 class="font-display text-xl font-bold mb-2">Material Accuracy</h3>
+                <p class="text-gray-400 text-sm mb-4">Premium 2K model renders brick, glass, metal, and fabric with photographic precision for client approvals.</p>
+            </div>
+            
+            <div class="feature-card glass-card border-t-4 border-purple-500">
+                <div class="text-3xl mb-4">✏️</div>
+                <h3 class="font-display text-xl font-bold mb-2">Sketch Inpainting</h3>
+                <p class="text-gray-400 text-sm mb-4">Draw directly on renders to indicate changes—raise walls, adjust heights, modify proportions with visual guidance.</p>
+            </div>
+            
+            <div class="feature-card glass-card border-t-4 border-blue-500">
+                <div class="text-3xl mb-4">🔄</div>
+                <h3 class="font-display text-xl font-bold mb-2">Element Swapping</h3>
+                <p class="text-gray-400 text-sm mb-4">Replace furniture, fixtures, or architectural elements between reference photos instantly.</p>
+            </div>
+            
+            <div class="feature-card glass-card border-t-4 border-green-500">
+                <div class="text-3xl mb-4">📐</div>
+                <h3 class="font-display text-xl font-bold mb-2">Aspect Ratio Control</h3>
+                <p class="text-gray-400 text-sm mb-4">Generate in 9:16 vertical for social previews or standard ratios for technical documentation.</p>
+            </div>
+            
+            <div class="feature-card glass-card border-t-4 border-yellow-500">
+                <div class="text-3xl mb-4">🧚</div>
+                <h3 class="font-display text-xl font-bold mb-2">Pixie Assistant</h3>
+                <p class="text-gray-400 text-sm mb-4">Chat interface to search HTH's product catalog and insert verified materials directly into concepts.</p>
+            </div>
+            
+            <div class="feature-card glass-card border-t-4 border-red-500">
+                <div class="text-3xl mb-4">📸</div>
+                <h3 class="font-display text-xl font-bold mb-2">Studio Enhanced</h3>
+                <p class="text-gray-400 text-sm mb-4">One-click professional camera angles and composition for presentation-ready renders.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 8: Crown & Chemist Warehouse Showcase -->
+<section class="slide" data-slide="7">
+    <div class="max-w-6xl w-full grid md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+            <div class="relative overflow-hidden rounded-2xl">
+                <img src="./20260111-DSC05897.jpg" alt="Crown Build" class="w-full h-64 object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <div>
+                        <h3 class="text-2xl font-bold">Crown Melbourne</h3>
+                        <p class="text-gray-300 text-sm">Premium hospitality build-out</p>
+                    </div>
+                </div>
+            </div>
+            <div class="relative overflow-hidden rounded-2xl">
+                <img src="./VRC-3667.jpg" alt="Champagne Tower" class="w-full h-64 object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <div>
+                        <h3 class="text-2xl font-bold">Champagne Tower Install</h3>
+                        <p class="text-gray-300 text-sm">Custom activation elements</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="space-y-6 flex flex-col justify-center">
+            <h2 class="font-display text-4xl font-bold">Premium Brand Activations</h2>
+            <p class="text-xl text-gray-300 leading-relaxed">
+                From Crown's luxury hospitality suites to Chemist Warehouse's bold blue-and-yellow activations, ReLooK helps visualize brand-specific custom builds before construction begins.
+            </p>
+            <div class="space-y-4">
+                <div class="flex items-center gap-4 p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl">👑</div>
+                    <div>
+                        <div class="font-bold">Crown Resorts</div>
+                        <div class="text-sm text-gray-400">High-end interior finishes & lighting</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl">💊</div>
+                    <div>
+                        <div class="font-bold">Chemist Warehouse</div>
+                        <div class="text-sm text-gray-400">Bold exterior branding & colorways</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 9: Thomas & Team -->
+<section class="slide" data-slide="8">
+    <div class="max-w-4xl w-full text-center">
+        <div class="mb-8">
+            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl mb-4">
+                👑
+            </div>
+            <h2 class="font-display text-4xl font-bold mb-2">Meet Thomas</h2>
+            <p class="text-xl text-blue-400">AI Champion • Melbourne Custom Build</p>
+        </div>
+        
+        <p class="text-xl text-gray-300 mb-12 leading-relaxed">
+            Leading the Custom Build Department's AI transformation. Thomas specializes in translating 
+            <span class="text-white font-semibold">architectural requirements</span> into 
+            <span class="text-white font-semibold">photorealistic previews</span> for high-end permanent structures.
+        </p>
+        
+        <div class="glass-card inline-block px-8 py-4 mb-12">
+            <span class="text-gray-400">Platform:</span>
+            <span class="text-white font-bold ml-2">relook.hthsystems.com.au</span>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            <div class="glass-card p-4 text-center">
+                <div class="text-3xl mb-2">🏗️</div>
+                <div class="text-sm font-bold">Permanent</div>
+                <div class="text-xs text-gray-500">Structures</div>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <div class="text-3xl mb-2">🎨</div>
+                <div class="text-sm font-bold">Brand</div>
+                <div class="text-xs text-gray-500">Activations</div>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <div class="text-3xl mb-2">⚡</div>
+                <div class="text-sm font-bold">Rapid</div>
+                <div class="text-xs text-gray-500">Iterations</div>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <div class="text-3xl mb-2">📐</div>
+                <div class="text-sm font-bold">Precision</div>
+                <div class="text-xs text-gray-500">Detailing</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 10: Roadmap -->
+<section class="slide" data-slide="9">
+    <div class="max-w-5xl w-full">
+        <h2 class="font-display text-4xl font-bold text-center mb-12">Development Status</h2>
+        
+        <div class="space-y-6">
+            <div class="glass-card flex items-center gap-6 border-l-4 border-green-500">
+                <div class="text-3xl">✅</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Multi-Image Reference</h3>
+                    <p class="text-gray-400 text-sm">Upload up to 5 reference images and synthesize elements across all of them</p>
+                </div>
+                <span class="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-full">LIVE</span>
+            </div>
+            
+            <div class="glass-card flex items-center gap-6 border-l-4 border-green-500">
+                <div class="text-3xl">✅</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Visual Inpainting</h3>
+                    <p class="text-gray-400 text-sm">Sketch-to-edit functionality with pink overlay indicators for precise modifications</p>
+                </div>
+                <span class="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-full">LIVE</span>
+            </div>
+            
+            <div class="glass-card flex items-center gap-6 border-l-4 border-green-500">
+                <div class="text-3xl">✅</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Premium 2K Model</h3>
+                    <p class="text-gray-400 text-sm">High-resolution generation for large-format printing and client presentations</p>
+                </div>
+                <span class="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-full">ACTIVE</span>
+            </div>
+            
+            <div class="glass-card flex items-center gap-6 border-l-4 border-blue-500">
+                <div class="text-3xl">📋</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Folio Integration</h3>
+                    <p class="text-gray-400 text-sm">Direct access to HTH product catalog for accurate material and furniture specification</p>
+                </div>
+                <span class="text-xs bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">PLANNED</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Slide 11: CTA -->
+<section class="slide" data-slide="10">
+    <div class="text-center max-w-3xl">
+        <h2 class="font-display text-6xl font-bold mb-6 gradient-text">Ready to Build?</h2>
+        <p class="text-xl text-gray-300 mb-12">
+            The Melbourne Custom Build team now has the power to visualize permanent structures 
+            and brand activations before breaking ground.
+        </p>
+        
+        <div class="flex flex-col md:flex-row gap-4 justify-center mb-12">
+            <a href="https://relook.hthsystems.com.au" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-purple-500/25">
+                Launch ReLooK Platform
+            </a>
+            <button onclick="alert('Contact Thomas for onboarding')" class="px-8 py-4 bg-white/10 border border-white/20 rounded-full font-bold text-lg hover:bg-white/20 transition-colors">
+                Request Training
+            </button>
+        </div>
+        
+        <div class="glass-card inline-block px-8 py-4 text-sm text-gray-400">
+            <span class="text-white font-semibold">Questions?</span> Reach out to Thomas (AI Champion) or the HTH Systems team
+        </div>
+    </div>
+</section>
+
+<script>
+    // Initialize GSAP
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Create particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.opacity = Math.random();
+        particlesContainer.appendChild(particle);
+    }
+    
+    // Navigation dots
+    const slides = document.querySelectorAll('.slide');
+    const navDotsContainer = document.getElementById('navDots');
+    let currentSlide = 0;
+    
+    slides.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.className = 'nav-dot' + (idx === 0 ? ' active' : '');
+        dot.onclick = () => scrollToSlide(idx);
+        navDotsContainer.appendChild(dot);
+    });
+    
+    const dots = document.querySelectorAll('.nav-dot');
+    
+    function scrollToSlide(idx) {
+        slides[idx].scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Scroll observer
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const idx = parseInt(entry.target.dataset.slide);
+                currentSlide = idx;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === idx);
+                });
+                
+                // Update progress bar
+                const progress = ((idx + 1) / slides.length) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+                
+                // Animate feature cards if on features slide
+                if (idx === 6) {
+                    gsap.to('.feature-card', {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        stagger: 0.1,
+                        ease: "power2.out"
+                    });
+                }
+            }
+        });
+    }, observerOptions);
+    
+    slides.forEach(slide => observer.observe(slide));
+    
+    // Image comparison slider
+    const container = document.getElementById('comparison');
+    const overlay = document.getElementById('overlay');
+    const handle = document.getElementById('handle');
+    let isDragging = false;
+    
+    function updateSlider(x) {
+        const rect = container.getBoundingClientRect();
+        let position = ((x - rect.left) / rect.width) * 100;
+        position = Math.max(0, Math.min(100, position));
+        
+        overlay.style.width = position + '%';
+        handle.style.left = position + '%';
+    }
+    
+    handle.addEventListener('mousedown', () => isDragging = true);
+    window.addEventListener('mouseup', () => isDragging = false);
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) updateSlider(e.clientX);
+    });
+    
+    // Touch support
+    handle.addEventListener('touchstart', () => isDragging = true);
+    window.addEventListener('touchend', () => isDragging = false);
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) updateSlider(e.touches[0].clientX);
+    });
+    
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+            if (currentSlide < slides.length - 1) scrollToSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+            if (currentSlide > 0) scrollToSlide(currentSlide - 1);
+        }
+    });
+    
+    // Parallax effects
+    gsap.utils.toArray('.slide').forEach((slide, i) => {
+        const bg = slide.querySelector('img');
+        if (bg && slide.dataset.slide === "0") {
+            gsap.to(bg, {
+                yPercent: 30,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: slide,
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

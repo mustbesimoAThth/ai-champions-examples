@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLook Prompt Cheat Sheet — Exhibition Visualisation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: A4; margin: 0.8cm 1cm; }
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0;
+            line-height: 1.3;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2.5px solid #1a1a2e;
+            padding-bottom: 0.35rem;
+            margin-bottom: 0.4rem;
+        }
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .header .badge {
+            background: #1a1a2e;
+            color: white;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 0.62rem;
+            margin-bottom: 0.4rem;
+        }
+        .section {
+            margin-bottom: 0.35rem;
+        }
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            padding: 0.15rem 0.5rem;
+            background: #f0f0f5;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.25rem;
+        }
+        .prompt-card {
+            border: 1px solid #e0e0e8;
+            border-radius: 5px;
+            padding: 0.25rem 0.35rem;
+            background: #fafafe;
+        }
+        .prompt-card .label {
+            font-size: 0.45rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #888;
+            margin-bottom: 0.08rem;
+        }
+        .prompt-card .prompt {
+            font-size: 0.56rem;
+            font-weight: 500;
+            color: #1a1a2e;
+            line-height: 1.2;
+        }
+        .prompt-card .note {
+            font-size: 0.45rem;
+            color: #999;
+            margin-top: 0.08rem;
+            font-style: italic;
+        }
+        .accent-amber .section-title { background: #fff8e1; color: #e65100; }
+        .accent-purple .section-title { background: #ede7f6; color: #6a1b9a; }
+        .accent-blue .section-title { background: #e3f2fd; color: #1565c0; }
+        .accent-green .section-title { background: #e8f5e9; color: #2e7d32; }
+        .accent-teal .section-title { background: #e0f2f1; color: #00695c; }
+        .accent-red .section-title { background: #fce4ec; color: #c62828; }
+
+        .full-prompt {
+            border: 1.5px solid #e0e0e8;
+            border-radius: 6px;
+            padding: 0.35rem 0.4rem;
+            background: #fafafe;
+            margin-bottom: 0.25rem;
+        }
+        .full-prompt .fp-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.15rem;
+        }
+        .full-prompt .fp-body {
+            font-size: 0.5rem;
+            color: #333;
+            line-height: 1.25;
+        }
+        .full-prompt .fp-body strong {
+            color: #1a1a2e;
+        }
+        .full-prompt .fp-body .tag {
+            display: inline-block;
+            background: #f0f0f5;
+            padding: 0.05rem 0.25rem;
+            border-radius: 3px;
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: #666;
+            margin: 0.08rem 0.1rem 0.08rem 0;
+        }
+        .full-prompt .fp-body .tag-amber { background: #fff8e1; color: #e65100; }
+        .full-prompt .fp-body .tag-red { background: #fce4ec; color: #c62828; }
+        .full-prompt .fp-body .tag-blue { background: #e3f2fd; color: #1565c0; }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.2rem;
+        }
+        .tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.25rem;
+            font-size: 0.5rem;
+            color: #555;
+            line-height: 1.2;
+        }
+        .tip-icon {
+            flex-shrink: 0;
+            width: 12px;
+            height: 12px;
+            background: #1a1a2e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.4rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+        .footer {
+            border-top: 1.5px solid #e0e0e8;
+            padding-top: 0.3rem;
+            margin-top: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.5rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>ReLook Prompt Cheat Sheet</h1>
+            <p style="font-size: 0.65rem; color: #666; margin-top: 0.08rem;">Exhibition Visualisation — Melbourne Production</p>
+        </div>
+        <div class="badge">Exhibition Viz</div>
+    </div>
+
+    <p class="subtitle">Prompt patterns for hyper-realistic exhibition renders. Upload concept layout + lighting plan + venue HDRI. Platform: relook.hthsystems.com.au</p>
+
+    <!-- Master Prompt 1: Polestar Exhibition -->
+    <div class="section accent-amber">
+        <div class="section-title">Master Prompt 1 — Hyper-Realistic Exhibition Render</div>
+        <div class="full-prompt">
+            <div class="fp-title">Polestar Exhibition — Full Master Prompt</div>
+            <div class="fp-body">
+                <span class="tag tag-amber">Image 1</span> = Concept layout (MASTER — preserved exactly)
+                <span class="tag tag-red">Image 2</span> = Lighting plan
+                <span class="tag tag-blue">Image 3</span> = HDRI hall reference<br><br>
+
+                Create a hyper-realistic Polestar exhibition render.<br><br>
+
+                <strong>ABSOLUTE MASTER LOCK:</strong> Image 1 defines everything. Do not change, move, scale, or redesign: stand layout, car positions, camera angle, signage placement, overall composition.<br><br>
+
+                <strong>VEHICLES:</strong> Real production models only — Polestar 2, 3, 4. Exact positions, realistic proportions.<br><br>
+
+                <strong>FLOOR (HARD RULE):</strong> Max 20mm height. Visually flush with surrounding floor. White glossy surface, soft reflections, thin metallic edge trim. Subtle shadow line only. <strong>If it looks raised → incorrect.</strong><br><br>
+
+                <strong>NO ADDITIONS:</strong> No furniture, barriers, props, extra signage, or decorations. Keep minimal.<br><br>
+
+                <strong>LIGHTING:</strong> Black minimal architectural fittings. Warm-neutral white spotlights. Medium atmospheric haze for visible beams. Soft beam falloff.<br><br>
+
+                <strong>LIGHTBOX:</strong> Suspended Polestar lightbox — black structure, white logo, even illumination. Must remain.<br><br>
+
+                <strong>PEOPLE:</strong> Walking naturally. Some crossing stand seamlessly (no step). Neutral modern clothing. Don't overcrowd.<br><br>
+
+                <strong>ENVIRONMENT:</strong> Large modern exhibition hall. Clean architecture. HDRI-style lighting. Slight cool tone.<br><br>
+
+                <strong>CAMERA REALISM:</strong> Natural lens behaviour, soft highlights, micro-contrast, realistic depth, clean gradients. No stylisation.
+            </div>
+        </div>
+    </div>
+
+    <!-- Master Prompt 2: Template for Any Brand -->
+    <div class="section accent-blue">
+        <div class="section-title">Master Prompt 2 — Reusable Exhibition Template</div>
+        <div class="full-prompt">
+            <div class="fp-title">Any Client — Swap the [Bracketed] Values</div>
+            <div class="fp-body">
+                A <strong>photorealistic architectural visualization</strong> of an exhibition stand inside a busy convention center.<br><br>
+
+                <strong>STRUCTURAL BASIS:</strong> Booth structure (overhead trussing + fixture placement) must follow the technical design in <span class="tag">[YOUR INPUT IMAGE]</span>.<br><br>
+
+                <strong>CENTERPIECE:</strong> Replace <span class="tag">[PLACEHOLDER]</span> with a detailed 3D model of <span class="tag">[CLIENT PRODUCT]</span> — e.g. a silver Leapmotor C11 electric SUV.<br><br>
+
+                <strong>FLOORING:</strong> Floor area under truss: <span class="tag">[DESCRIBE FLOOR]</span> — e.g. raised high-gloss white plinth with integrated LED strip lighting.<br><br>
+
+                <strong>BRANDING:</strong> Large backwalls + reception counter with illuminated logos for <span class="tag">[CLIENT NAME]</span> and text for <span class="tag">[EVENT NAME]</span>.<br><br>
+
+                <strong>ATMOSPHERE & LIGHTING:</strong> Mood = <span class="tag">[DESCRIBE MOOD]</span>. Fixtures active, casting bright light on product. Accent palette: <span class="tag">[COLOUR CHOICE]</span> — e.g. electric blue and cool white.<br><br>
+
+                <strong>ENVIRONMENT:</strong> Diverse business professionals in suits/smart casual interacting with space. Background: realistic, slightly blurred exhibition hall with distant booths.
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Modifiers -->
+    <div class="section accent-purple">
+        <div class="section-title">Quick Modifiers — Add to Either Prompt</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Swap Product</div>
+                <div class="prompt">"Replace [car/product] with a <strong>[specific model name and colour]</strong>"</div>
+                <div class="note">Works for any brand — Zeekr 001, Leapmotor C11, etc.</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Change Floor</div>
+                <div class="prompt">"Change floor to <strong>[black glossy / branded vinyl / timber deck]</strong>, keep flush 20mm height"</div>
+                <div class="note">Always re-state the 20mm rule when changing floor</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Adjust Lighting</div>
+                <div class="prompt">"Change lighting colour to <strong>[cool white / warm amber / brand blue]</strong> with <strong>[subtle / dramatic]</strong> haze"</div>
+                <div class="note">Specify beam colour + haze level for best results</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Add Branding</div>
+                <div class="prompt">"Add illuminated <strong>[CLIENT]</strong> logo on the <strong>[backwall / lightbox / reception counter]</strong>"</div>
+                <div class="note">Specify position and whether the logo is backlit or surface-mounted</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fail Conditions & Quality Control -->
+    <div class="section accent-red">
+        <div class="section-title">Fail Conditions — Check Every Render</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Floor Check</div>
+                <div class="prompt">Floor appears raised or looks like a stage — any visible step = <strong>fail</strong></div>
+                <div class="note">Most common error. Always check floor edge first.</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Vehicle Check</div>
+                <div class="prompt">Cars are not recognisable real models — generic or altered designs = <strong>fail</strong></div>
+                <div class="note">Must be identifiable production models</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Lightbox Check</div>
+                <div class="prompt">Suspended lightbox is missing, moved, or restyled = <strong>fail</strong></div>
+                <div class="note">Must match position and style from concept</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Addition Check</div>
+                <div class="prompt">Extra elements added (furniture, barriers, props) = <strong>fail</strong></div>
+                <div class="note">Scene must remain minimal unless explicitly requested</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Power Tips -->
+    <div class="section accent-green">
+        <div class="section-title">Power Tips</div>
+        <div class="tips-grid">
+            <div class="tip">
+                <div class="tip-icon">1</div>
+                <div><strong>3-image combo is key.</strong> Concept + lighting plan + venue HDRI = the best results. Don't skip images.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">2</div>
+                <div><strong>Lock structure first.</strong> Always state "Image 1 defines everything" — prevents the AI from reinterpreting your layout.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">3</div>
+                <div><strong>State fail conditions.</strong> Explicitly listing what's wrong helps the AI avoid common mistakes.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">4</div>
+                <div><strong>Premium 2K for client-facing.</strong> Fast model for quick internal checks. Premium for anything going into a production pack.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">5</div>
+                <div><strong>Iterate, don't restart.</strong> V1 gets the structure. V2 refines lighting and materials. V3 nails the atmosphere.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">6</div>
+                <div><strong>Swap brands fast.</strong> Same prompt, different product + logo + colours = new client render in seconds.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>Harry The Hirer &bull; ReLook Platform &bull; relook.hthsystems.com.au</span>
+        <span>AI Champion: Paul &bull; Production Melbourne</span>
+    </div>
+</body>
+</html>

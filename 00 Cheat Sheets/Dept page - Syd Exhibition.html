@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLooK | Sydney Exhibition — Complete Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        /* ── Slides ── */
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        /* ── Progress bar ── */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        /* ── Nav dots ── */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.4);
+            border-color: #f59e0b;
+        }
+        .nav-dot-label {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .nav-dot:hover .nav-dot-label { opacity: 1; }
+
+        /* ── Comparison slider ── */
+        .comparison-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .comparison-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .comparison-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            cursor: ew-resize;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* ── Glass card ── */
+        .glass-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        /* ── Gradient text ── */
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── Feature cards ── */
+        .feature-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* ── Prompt blocks ── */
+        .prompt-block {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #d1d5db;
+            position: relative;
+            overflow: hidden;
+        }
+        .prompt-block::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, #f59e0b, #ef4444);
+            border-radius: 3px 0 0 3px;
+        }
+        .prompt-block strong { color: #fbbf24; }
+        .prompt-block .label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #f59e0b;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        /* ── Step numbers ── */
+        .step-number {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        /* ── Chapter divider ── */
+        .chapter-divider {
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .chapter-divider::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        }
+
+        /* ── Particles ── */
+        .particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+    <base target="_blank">
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="particles" id="particles"></div>
+<div class="nav-dots" id="navDots"></div>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="0" data-label="Title">
+    <div class="absolute inset-0 z-0">
+        <img src="./generated_1774312891134.jpg" class="w-full h-full object-cover opacity-25" alt="" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/80 to-black"></div>
+    </div>
+
+    <div class="relative z-10 text-center max-w-5xl">
+        <div class="mb-6 inline-block px-4 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium tracking-wider uppercase">
+            Harry The Hirer &bull; Sydney Exhibition
+        </div>
+        <h1 class="font-display text-7xl md:text-9xl font-bold mb-6 leading-none">
+            <span class="block gradient-text">ReLooK</span>
+            <span class="block text-3xl md:text-5xl mt-4 font-light text-gray-400">Exhibition Visualisation</span>
+        </h1>
+        <p class="text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
+            AI-powered exhibition visuals. From concept layouts<br>
+            to hyper-realistic stand renders — in seconds.
+        </p>
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-400">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Christine &bull; AI Champion</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Exhibition Team Sydney</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 2 — THE CHALLENGE
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="1" data-label="The Challenge">
+    <div class="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber">The Challenge</h2>
+            <p class="text-xl text-gray-300 leading-relaxed">
+                Production teams live in <span class="text-white font-semibold">Vectorworks and tech drawings</span> — clients don't. Whether it's a rigging plan or a full exhibition concept, the gap between what you design and what the client can imagine is where projects stall.
+            </p>
+            <div class="space-y-4 mt-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">CAD drawings don't convey atmosphere or finished look</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">Exhibition concepts need realistic visuals for sign-off</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+                    <p class="text-gray-400">Traditional 3D renders take days and cost thousands</p>
+                </div>
+            </div>
+        </div>
+        <div class="relative">
+            <div class="glass-card p-8 space-y-6 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span class="text-sm text-gray-400">Traditional Workflow</span>
+                    <span class="text-red-400 text-sm">Days + $$$$</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="h-2 bg-white/10 rounded w-full"></div>
+                    <div class="h-2 bg-white/10 rounded w-4/5"></div>
+                    <div class="h-2 bg-white/10 rounded w-3/5"></div>
+                </div>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 pt-4">
+                    <span class="text-sm text-gray-400">With ReLooK</span>
+                    <span class="text-green-400 text-sm">Under 60 seconds</span>
+                </div>
+                <div class="h-28 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
+                    <span class="text-2xl font-display font-bold gradient-text-amber">Draw &rarr; Describe &rarr; Done</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     CHAPTER A — PRODUCTION SKETCH INPAINT
+     ════════════════════════════════════════════════════════════════ -->
+
+
+<!-- SLIDE 3 — SKETCH INPAINT TECHNIQUE -->
+<section class="slide" data-slide="2" data-label="Sketch Inpaint">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold tracking-wider uppercase mb-4">Part 1 &mdash; Production</div>
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Sketch Inpaint on Technical Drawings</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">Upload your Vectorworks export. Draw pink arrows where lights should go. Tell the AI what you want. Get a production-ready visual.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-amber-400">01</div>
+                <h3 class="font-display text-xl font-bold">Upload CAD</h3>
+                <p class="text-gray-400 text-sm">Export from Vectorworks as JPEG — plan view, ISO, or side elevation. ReLooK reads the geometry.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-red-400">02</div>
+                <h3 class="font-display text-xl font-bold">Sketch It</h3>
+                <p class="text-gray-400 text-sm">Draw pink arrows for light positions, green zones for boundaries. Colour-code your intent — the AI reads both.</p>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-purple-400">03</div>
+                <h3 class="font-display text-xl font-bold">Describe It</h3>
+                <p class="text-gray-400 text-sm">"Generate light beams where the arrows are to illuminate the green grid — remove the sketch marks." Done.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 4 — BEFORE / AFTER (two comparisons) -->
+<section class="slide" data-slide="3" data-label="Before / After">
+    <div class="max-w-6xl w-full space-y-10">
+        <div class="text-center mb-2">
+            <h2 class="font-display text-5xl font-bold gradient-text-amber mb-4">Before &rarr; After</h2>
+            <p class="text-xl text-gray-400">Sydney Exhibition — AI-Enhanced Stand Visualisation</p>
+        </div>
+
+        <!-- Comparison 1: before → after (the named pair) -->
+        <div>
+            <div class="comparison-container mx-auto" id="comparison1">
+                <img src="./after.jpg" class="comparison-image" alt="After: AI-enhanced exhibition render" />
+                <div class="comparison-overlay" id="overlay1">
+                    <img src="./before .jpg" class="comparison-image" alt="Before: Original exhibition stand" style="width: 900px; max-width: none;" />
+                </div>
+                <div class="slider-handle" id="handle1">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5"><path d="M8 5l-5 7 5 7"/><path d="M16 5l5 7-5 7"/></svg>
+                </div>
+            </div>
+            <div class="flex justify-center gap-8 text-sm text-gray-500 mt-3">
+                <span>&#8592; Original Exhibition Stand</span>
+                <span>ReLooK — AI-Enhanced Render &#8594;</span>
+            </div>
+        </div>
+
+        <!-- Comparison 2: generated → regen (iteration pair) -->
+        <div>
+            <div class="comparison-container mx-auto" id="comparison2">
+                <img src="./regen generated_1774313326991.jpg" class="comparison-image" alt="After: AI regenerated render" />
+                <div class="comparison-overlay" id="overlay2">
+                    <img src="./generated_1774313326991.jpg" class="comparison-image" alt="Before: First AI generation" style="width: 900px; max-width: none;" />
+                </div>
+                <div class="slider-handle" id="handle2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5"><path d="M8 5l-5 7 5 7"/><path d="M16 5l5 7-5 7"/></svg>
+                </div>
+            </div>
+            <div class="flex justify-center gap-8 text-sm text-gray-500 mt-3">
+                <span>&#8592; First Generation</span>
+                <span>ReLooK — Refined Regeneration &#8594;</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 5 — PRODUCTION USE CASES -->
+<section class="slide" data-slide="4" data-label="Production Uses">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Production Use Cases</h2>
+            <p class="text-xl text-gray-400">Where Sketch Inpaint fits into your production workflow</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold">&#9788;</div>
+                    <h3 class="font-display text-xl font-bold">Lighting Visualisation</h3>
+                </div>
+                <p class="text-gray-400">Add realistic light beams to CAD drawings. Define zones, control spill, show clients exactly what the lighting will look like — before a single fixture is hung.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold">&#9674;</div>
+                    <h3 class="font-display text-xl font-bold">Rigging &amp; Truss Previews</h3>
+                </div>
+                <p class="text-gray-400">Swap truss finishes (Silver HD44 vs Black HD34), add draping, visualise flying elements — all from the Vectorworks drawing without 3D software.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">&#8644;</div>
+                    <h3 class="font-display text-xl font-bold">CAD &harr; Realistic Conversion</h3>
+                </div>
+                <p class="text-gray-400">Turn flat technical drawings into photorealistic renders for client decks. Or generate clean 2D elevations from site photos for documentation.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 font-bold">&#10003;</div>
+                    <h3 class="font-display text-xl font-bold">Production Pack Visuals</h3>
+                </div>
+                <p class="text-gray-400">Generate hero images that sit alongside your technical specs in production packs. Clients see the vision and the detail — in the same document.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     CHAPTER B — EXHIBITION VISUALISATION
+     ════════════════════════════════════════════════════════════════ -->
+
+
+<!-- SLIDE 6 — MULTI-IMAGE TECHNIQUE -->
+<section class="slide" data-slide="5" data-label="Exhibition Viz">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <div class="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold tracking-wider uppercase mb-4">Part 2 &mdash; Exhibition Visualisation</div>
+            <h2 class="font-display text-5xl font-bold gradient-text-blue mb-4">Multi-Image Generation</h2>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">Combine up to three reference images — concept layout, lighting plan, and venue HDRI — to produce a hyper-realistic exhibition render.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-amber-400">01</div>
+                <h3 class="font-display text-xl font-bold">Concept Layout</h3>
+                <p class="text-gray-400 text-sm">Your master image. Defines stand structure, car positions, camera angle, signage — the AI preserves it exactly. No reinterpretation.</p>
+                <div class="mt-3 px-3 py-1.5 bg-amber-500/10 rounded-full text-amber-400 text-xs font-semibold inline-block">IMAGE 1 = MASTER LOCK</div>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-red-400">02</div>
+                <h3 class="font-display text-xl font-bold">Lighting Plan</h3>
+                <p class="text-gray-400 text-sm">Your technical lighting drawing. Defines fixture positions, beam directions, and zones. The AI applies these as realistic light with atmospheric haze.</p>
+                <div class="mt-3 px-3 py-1.5 bg-red-500/10 rounded-full text-red-400 text-xs font-semibold inline-block">IMAGE 2 = LIGHTING</div>
+            </div>
+            <div class="glass-card text-center space-y-4">
+                <div class="text-5xl font-display font-bold text-purple-400">03</div>
+                <h3 class="font-display text-xl font-bold">Venue HDRI</h3>
+                <p class="text-gray-400 text-sm">A reference photo of the actual hall. Sets the environmental lighting, architecture, and atmosphere around your stand.</p>
+                <div class="mt-3 px-3 py-1.5 bg-purple-500/10 rounded-full text-purple-400 text-xs font-semibold inline-block">IMAGE 3 = ENVIRONMENT</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 7 — MASTER PROMPT: POLESTAR -->
+<section class="slide" data-slide="6" data-label="Polestar Prompt">
+    <div class="max-w-5xl w-full space-y-6">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-4xl font-bold gradient-text-amber mb-3">Master Prompt: Polestar Exhibition</h2>
+            <p class="text-lg text-gray-400">The proven prompt structure for hyper-realistic exhibition renders</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="prompt-block">
+                <span class="label">Structure Lock</span>
+                Image 1 defines <strong>everything</strong>. Do not change, move, scale, or redesign: stand layout, car positions, camera angle, signage placement, overall composition.
+            </div>
+            <div class="prompt-block">
+                <span class="label">Vehicles</span>
+                Use <strong>real production models only</strong> — Polestar 2, 3, 4. Maintain exact positions and realistic proportions. No concept or altered designs.
+            </div>
+            <div class="prompt-block">
+                <span class="label">Floor — Hard Rule</span>
+                Floor height: <strong>max 20mm only</strong>. Must appear visually flush. Not a stage, not raised. White glossy surface, soft reflections, thin metallic edge trim. <strong>If it looks raised &rarr; incorrect.</strong>
+            </div>
+            <div class="prompt-block">
+                <span class="label">Lighting</span>
+                Black, minimal, architectural fittings. <strong>Warm-neutral white</strong> spotlights. Medium atmospheric haze to reveal beams. Soft, realistic beam falloff. No harsh theatrical cones.
+            </div>
+            <div class="prompt-block">
+                <span class="label">No Additions</span>
+                No furniture. No barriers. No props. No extra signage. No decorative additions. <strong>Keep the scene minimal.</strong>
+            </div>
+            <div class="prompt-block">
+                <span class="label">Camera Realism</span>
+                Natural lens behaviour. Soft highlight roll-off. Subtle micro-contrast. Realistic depth. Clean tonal gradients. <strong>No stylisation. No heavy effects.</strong>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 rounded-full text-red-400 text-sm font-medium">
+                <span>&#9888;</span> Fail if: floor looks raised &bull; cars aren't real models &bull; lightbox missing &bull; extra elements added
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 8 — TEMPLATE PROMPT: ANY STAND -->
+<section class="slide" data-slide="7" data-label="Template Prompt">
+    <div class="max-w-5xl w-full space-y-6">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-4xl font-bold gradient-text-blue mb-3">Template Prompt: Any Exhibition Stand</h2>
+            <p class="text-lg text-gray-400">A reusable prompt structure — swap in your client, product, and brand</p>
+        </div>
+
+        <div class="glass-card space-y-5">
+            <div class="space-y-4">
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-blue-500/20 text-blue-400">1</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Style &amp; Context</h4>
+                        <p class="text-gray-400 text-sm">"A <strong class="text-blue-300">photorealistic architectural visualization</strong> of an exhibition stand inside a busy convention center."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-amber-500/20 text-amber-400">2</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Structural Basis</h4>
+                        <p class="text-gray-400 text-sm">"The booth structure — overhead trussing and fixture placement — must follow the technical design in <strong class="text-amber-300">[your input image]</strong>."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-red-500/20 text-red-400">3</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Product Replacement</h4>
+                        <p class="text-gray-400 text-sm">"Replace the <strong class="text-red-300">[placeholder]</strong> with a detailed 3D model of <strong class="text-red-300">[client product]</strong>."</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-purple-500/20 text-purple-400">4</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">Flooring, Branding &amp; Lighting</h4>
+                        <p class="text-gray-400 text-sm">Define floor finish, add illuminated client logos, specify accent colour palette — e.g. <strong class="text-purple-300">"electric blue and cool white"</strong>.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-green-500/20 text-green-400">5</div>
+                    <div>
+                        <h4 class="font-display font-bold text-lg mb-1">People &amp; Environment</h4>
+                        <p class="text-gray-400 text-sm">"Populate with <strong class="text-green-300">diverse business professionals</strong> interacting with the space. Background: realistic, slightly blurred exhibition hall."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-2">
+            <p class="text-gray-500 text-sm">Swap the <span class="text-white/60">[bracketed values]</span> for any client — Leapmotor, Zeekr, Polestar, or any brand.</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDE 9 — EXHIBITION USE CASES -->
+<section class="slide" data-slide="8" data-label="Exhibition Uses">
+    <div class="max-w-6xl w-full space-y-8">
+        <div class="text-center mb-4">
+            <h2 class="font-display text-5xl font-bold gradient-text mb-4">Exhibition Use Cases</h2>
+            <p class="text-xl text-gray-400">Where Multi-Image prompts fit into your exhibition workflow</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-lg">&#9670;</div>
+                    <h3 class="font-display text-xl font-bold">Client Concept Approval</h3>
+                </div>
+                <p class="text-gray-400">Generate photorealistic renders from your initial concept layout. Clients sign off faster when they see the stand — lit, dressed, and populated — before a single bolt is tightened.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-lg">&#9788;</div>
+                    <h3 class="font-display text-xl font-bold">Lighting Design Preview</h3>
+                </div>
+                <p class="text-gray-400">Overlay your lighting plan onto the concept. See realistic beam angles, haze effects, and colour temperatures before specifying fixtures. Iterate beam zones in seconds.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-lg">&#8644;</div>
+                    <h3 class="font-display text-xl font-bold">Multi-Brand Variations</h3>
+                </div>
+                <p class="text-gray-400">Same booth structure, different client. Swap product, branding, and colour palette — generate a new render for Leapmotor, Zeekr, or any brand without re-modelling.</p>
+            </div>
+            <div class="glass-card space-y-4 feature-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 font-bold text-lg">&#10003;</div>
+                    <h3 class="font-display text-xl font-bold">Production Pack Hero Images</h3>
+                </div>
+                <p class="text-gray-400">Generate premium visuals for client production packs. Sit them alongside technical drawings and rigging specs — vision and detail in one document.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 10 — GET STARTED
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-slide="9" data-label="Get Started">
+    <div class="max-w-4xl w-full text-center space-y-8">
+        <h2 class="font-display text-5xl font-bold gradient-text mb-4">Get Started</h2>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            The platform is live and ready. Whether you're adding light beams to a CAD plan or generating an entire exhibition render — the workflow starts the same way.
+        </p>
+
+        <div class="glass-card max-w-xl mx-auto text-left space-y-4 mt-8">
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">1</div>
+                <p class="text-gray-300">Log in at <span class="text-white font-semibold">relook.hthsystems.com.au</span></p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">2</div>
+                <p class="text-gray-300"><strong class="text-white">Production:</strong> Upload Vectorworks export &amp; sketch your intent</p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">3</div>
+                <p class="text-gray-300"><strong class="text-white">Exhibition:</strong> Upload concept + lighting plan + venue HDRI</p>
+            </div>
+            <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">4</div>
+                <p class="text-gray-300">Paste the Master Prompt or use the Cheat Sheet for proven patterns</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-sm font-bold">5</div>
+                <p class="text-gray-300">Premium 2K for client-facing &bull; Fast mode for internal checks</p>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mt-8">
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">AI Champion: Christine</span>
+            <span class="px-4 py-2 bg-white/5 rounded-full border border-white/10">Harry The Hirer Exhibition Sydney</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCRIPTS
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Particles ──
+const particlesEl = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 20 + 's';
+    p.style.animationDuration = (15 + Math.random() * 10) + 's';
+    particlesEl.appendChild(p);
+}
+
+// ── Navigation dots with labels ──
+const slides = document.querySelectorAll('.slide');
+const navDots = document.getElementById('navDots');
+slides.forEach((slide, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+
+    const label = document.createElement('span');
+    label.className = 'nav-dot-label';
+    label.textContent = slide.dataset.label || '';
+    dot.appendChild(label);
+
+    dot.addEventListener('click', () => {
+        slides[i].scrollIntoView({ behavior: 'smooth' });
+    });
+    navDots.appendChild(dot);
+});
+
+// ── Scroll progress & active dot ──
+window.addEventListener('scroll', () => {
+    const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = scrollPercent + '%';
+
+    const dots = document.querySelectorAll('.nav-dot');
+    slides.forEach((slide, i) => {
+        const rect = slide.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+            dots.forEach(d => d.classList.remove('active'));
+            dots[i].classList.add('active');
+        }
+    });
+});
+
+// ── GSAP animations ──
+gsap.registerPlugin(ScrollTrigger);
+document.querySelectorAll('.feature-card').forEach(card => {
+    gsap.to(card, {
+        opacity: 1, y: 0, duration: 0.8,
+        scrollTrigger: { trigger: card, start: 'top 80%' }
+    });
+});
+
+// ── Comparison slider ──
+function initSlider(containerId, overlayId, handleId) {
+    const container = document.getElementById(containerId);
+    const overlay = document.getElementById(overlayId);
+    const handle = document.getElementById(handleId);
+    if (!container) return;
+
+    let isDragging = false;
+    const updateSlider = (x) => {
+        const rect = container.getBoundingClientRect();
+        let pos = ((x - rect.left) / rect.width) * 100;
+        pos = Math.max(0, Math.min(100, pos));
+        overlay.style.width = pos + '%';
+        handle.style.left = pos + '%';
+    };
+
+    handle.addEventListener('mousedown', () => isDragging = true);
+    container.addEventListener('mousemove', (e) => { if (isDragging) updateSlider(e.clientX); });
+    document.addEventListener('mouseup', () => isDragging = false);
+
+    handle.addEventListener('touchstart', () => isDragging = true);
+    container.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e.touches[0].clientX); });
+    document.addEventListener('touchend', () => isDragging = false);
+
+    container.addEventListener('click', (e) => updateSlider(e.clientX));
+}
+initSlider('comparison1', 'overlay1', 'handle1');
+initSlider('comparison2', 'overlay2', 'handle2');
+</script>
+</body>
+</html>

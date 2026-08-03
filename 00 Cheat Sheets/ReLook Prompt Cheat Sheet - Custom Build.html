@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLook Prompt Cheat Sheet — Custom Build & Custom Upgrades</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: A4; margin: 1.5cm; }
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #1a1a2e;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .header .badges {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            align-items: flex-end;
+        }
+        .header .badge {
+            background: #1a1a2e;
+            color: white;
+            padding: 0.35rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .badge-alt { background: #4a4a6e !important; }
+        .subtitle {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .section {
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            padding: 0.4rem 0.8rem;
+            background: #f0f0f5;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            display: inline-block;
+        }
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+        .prompt-card {
+            border: 1px solid #e0e0e8;
+            border-radius: 8px;
+            padding: 0.75rem;
+            background: #fafafe;
+        }
+        .prompt-card .label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+            margin-bottom: 0.3rem;
+        }
+        .prompt-card .prompt {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1a1a2e;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.4;
+        }
+        .prompt-card .note {
+            font-size: 0.65rem;
+            color: #999;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+        .accent-pink .section-title { background: #fce4ec; color: #c2185b; }
+        .accent-purple .section-title { background: #ede7f6; color: #6a1b9a; }
+        .accent-blue .section-title { background: #e3f2fd; color: #1565c0; }
+        .accent-green .section-title { background: #e8f5e9; color: #2e7d32; }
+        .accent-orange .section-title { background: #fff3e0; color: #e65100; }
+        .accent-teal .section-title { background: #e0f2f1; color: #00695c; }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+        .tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #555;
+        }
+        .tip-icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            background: #1a1a2e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+        .footer {
+            border-top: 2px solid #e0e0e8;
+            padding-top: 0.75rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #999;
+        }
+        .print-btn {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .print-btn:hover { background: #2a2a4e; }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">Print This Cheat Sheet</button>
+
+    <div class="header">
+        <div>
+            <h1>ReLook Prompt Cheat Sheet</h1>
+            <p style="font-size: 0.9rem; color: #666; margin-top: 0.25rem;">Melbourne Custom Build & Custom Upgrades</p>
+        </div>
+        <div class="badges">
+            <div class="badge">Custom Build</div>
+            <div class="badge badge-alt">Custom Upgrades</div>
+        </div>
+    </div>
+
+    <p class="subtitle">Proven prompt patterns for architectural builds and exhibition stands. Copy these, swap the specifics, and generate. Platform: relook.hthsystems.com.au</p>
+
+    <!-- Materials & Finishes -->
+    <div class="section accent-pink">
+        <div class="section-title">Materials & Finishes</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Metal Finish Swap</div>
+                <div class="prompt">"Change all the metal finishing (background and base object) to <strong>[black metal matte / brushed gold / polished chrome]</strong>"</div>
+                <div class="note">Actual prompt from VRC champagne tower revision</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Surface Material</div>
+                <div class="prompt">"Replace the <strong>[timber / concrete / render]</strong> surfaces with <strong>[marble / exposed brick / white plaster]</strong>"</div>
+                <div class="note">Works on: walls, floors, countertops, facade panels</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Glass & Transparency</div>
+                <div class="prompt">"Change the windows to <strong>[tinted glass / frosted glass / clear glass with reflections]</strong>"</div>
+                <div class="note">For pavilion facades, office partitions, display cases</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Cladding Swap</div>
+                <div class="prompt">"Change the exterior cladding from <strong>[dark panels]</strong> to <strong>[white aluminium composite / timber battens / corrugated metal]</strong>"</div>
+                <div class="note">Used for the AFL September Club facade revision</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Structural Modifications (Sketch Inpainting) -->
+    <div class="section accent-purple">
+        <div class="section-title">Structural Changes (Sketch Inpaint Mode)</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Height Adjustment</div>
+                <div class="prompt">"Raise the height of the <strong>[curved wall / partition / bar counter]</strong> as per the pink sketch"</div>
+                <div class="note">Draw a pink overlay on the image showing desired height — AI interprets it</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Add Architectural Element</div>
+                <div class="prompt">"Add a <strong>[canopy / awning / rooftop terrace]</strong> to the area marked in the sketch"</div>
+                <div class="note">Sketch the rough shape + position, prompt describes what it should be</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Remove Element</div>
+                <div class="prompt">"Remove the <strong>[column / barrier / signage]</strong> in the marked area and fill with the surrounding material"</div>
+                <div class="note">Paint over what you want removed, prompt tells AI what to replace with</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Extend / Widen</div>
+                <div class="prompt">"Extend the <strong>[balcony / bar top / facade panel]</strong> to the width shown in the sketch"</div>
+                <div class="note">Draw the new boundary and the AI fills in consistently</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Element Swapping (Multi-Ref) -->
+    <div class="section accent-blue">
+        <div class="section-title">Element Swapping (Multi-Reference Mode)</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Furniture from Ref</div>
+                <div class="prompt">"Change the stools of the 1st pic with the stool in the 2nd pic"</div>
+                <div class="note">Actual prompt used — upload venue photo + product photo as references</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Lighting Fixtures</div>
+                <div class="prompt">"Replace the pendant lights with the <strong>[chandelier / track lighting / globe lights]</strong> shown in reference 2"</div>
+                <div class="note">Upload the HTH product image or a mood reference</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Stand Re-skinning</div>
+                <div class="prompt">"Keep the same booth structure but rebrand for <strong>[client name]</strong> using the colours and logo from reference 2"</div>
+                <div class="note">Exhibition teams: same shell, new client — instant pitch visual</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Combine Best Elements</div>
+                <div class="prompt">"Use the bar layout from image 1, the seating from image 2, and the lighting from image 3"</div>
+                <div class="note">Up to 5 references. Each adds a different element to the final composite</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exhibition-Specific (Tammy) -->
+    <div class="section accent-orange">
+        <div class="section-title">Exhibition Stands (Custom Upgrades)</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Booth Visualisation</div>
+                <div class="prompt">"Show this exhibition stand with <strong>[LED backlit panels / living green wall / projector screen]</strong> on the rear wall"</div>
+                <div class="note">Great for upselling upgrade options to exhibitors</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Flooring Upgrade</div>
+                <div class="prompt">"Change the booth flooring to <strong>[raised timber deck / branded carpet / polished concrete]</strong>"</div>
+                <div class="note">Flooring dramatically changes the perceived quality of a stand</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Power Tips -->
+    <div class="section accent-green">
+        <div class="section-title">Power Tips</div>
+        <div class="tips-grid">
+            <div class="tip">
+                <div class="tip-icon">1</div>
+                <div><strong>Sketch inpaint = structural.</strong> If you're changing shape, height, or position, draw it. If you're changing colour or material, just type it.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">2</div>
+                <div><strong>Be specific about what stays.</strong> "Change the metal finish to black matte but keep the glass and timber as is" prevents unwanted changes.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">3</div>
+                <div><strong>Use 9:16 Vertical</strong> for social media previews and client Instagram stories. Use standard for technical documentation and decks.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">4</div>
+                <div><strong>Premium 2K for client-facing.</strong> Fast model for quick internal explorations. Premium for anything going into a proposal.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">5</div>
+                <div><strong>Multi-ref = composition.</strong> Reference 1 is your base scene. References 2-5 are elements you want placed into it.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">6</div>
+                <div><strong>Material names matter.</strong> "Black metal matte" is better than "dark metal." "Brushed brass" is better than "gold." Be precise.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>Harry The Hirer • ReLook Platform • relook.hthsystems.com.au</span>
+        <span>AI Champions: Thomas (Custom Build) • Tammy (Custom Upgrades)</span>
+    </div>
+</body>
+</html>

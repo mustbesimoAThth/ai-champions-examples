@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLook Prompt Cheat Sheet — Sydney Exhibition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: A4; margin: 0.8cm 1cm; }
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0;
+            line-height: 1.3;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2.5px solid #1a1a2e;
+            padding-bottom: 0.35rem;
+            margin-bottom: 0.4rem;
+        }
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .header .badges {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            align-items: flex-end;
+        }
+        .header .badge {
+            background: #1a1a2e;
+            color: white;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+        .badge-alt { background: #4a4a6e !important; }
+        .subtitle {
+            color: #666;
+            font-size: 0.62rem;
+            margin-bottom: 0.4rem;
+        }
+        .section {
+            margin-bottom: 0.35rem;
+        }
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            padding: 0.15rem 0.5rem;
+            background: #f0f0f5;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.25rem;
+        }
+        .prompt-card {
+            border: 1px solid #e0e0e8;
+            border-radius: 5px;
+            padding: 0.25rem 0.35rem;
+            background: #fafafe;
+        }
+        .prompt-card .label {
+            font-size: 0.45rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #888;
+            margin-bottom: 0.08rem;
+        }
+        .prompt-card .prompt {
+            font-size: 0.56rem;
+            font-weight: 500;
+            color: #1a1a2e;
+            line-height: 1.2;
+        }
+        .prompt-card .note {
+            font-size: 0.45rem;
+            color: #999;
+            margin-top: 0.08rem;
+            font-style: italic;
+        }
+        .accent-amber .section-title { background: #fff8e1; color: #e65100; }
+        .accent-purple .section-title { background: #ede7f6; color: #6a1b9a; }
+        .accent-blue .section-title { background: #e3f2fd; color: #1565c0; }
+        .accent-green .section-title { background: #e8f5e9; color: #2e7d32; }
+        .accent-teal .section-title { background: #e0f2f1; color: #00695c; }
+        .accent-pink .section-title { background: #fce4ec; color: #c2185b; }
+
+        .full-prompt {
+            border: 1.5px solid #e0e0e8;
+            border-radius: 6px;
+            padding: 0.35rem 0.4rem;
+            background: #fafafe;
+            margin-bottom: 0.25rem;
+        }
+        .full-prompt .fp-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.15rem;
+        }
+        .full-prompt .fp-body {
+            font-size: 0.5rem;
+            color: #333;
+            line-height: 1.28;
+        }
+        .full-prompt .fp-body strong { color: #1a1a2e; }
+        .full-prompt .fp-body .tag {
+            display: inline-block;
+            background: #f0f0f5;
+            padding: 0.05rem 0.25rem;
+            border-radius: 3px;
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: #666;
+            margin: 0.06rem 0.08rem 0.06rem 0;
+        }
+        .full-prompt .fp-body .tag-amber { background: #fff8e1; color: #e65100; }
+        .full-prompt .fp-body .tag-blue  { background: #e3f2fd; color: #1565c0; }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.2rem;
+        }
+        .tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.25rem;
+            font-size: 0.5rem;
+            color: #555;
+            line-height: 1.2;
+        }
+        .tip-icon {
+            flex-shrink: 0;
+            width: 12px;
+            height: 12px;
+            background: #1a1a2e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.4rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+        .footer {
+            border-top: 1.5px solid #e0e0e8;
+            padding-top: 0.3rem;
+            margin-top: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.5rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>ReLook Prompt Cheat Sheet</h1>
+            <p style="font-size: 0.65rem; color: #666; margin-top: 0.08rem;">Exhibition Booth Visualisation — Sydney Exhibition</p>
+        </div>
+        <div class="badges">
+            <div class="badge">Exhibition</div>
+            <div class="badge badge-alt">Sydney</div>
+        </div>
+    </div>
+
+    <p class="subtitle">Prompt patterns for turning sketches, line drawings, and real booth photos into photorealistic exhibition stand renders. Platform: relook.hthsystems.com.au</p>
+
+    <!-- Master Prompt 1: Sketch → Render -->
+    <div class="section accent-amber">
+        <div class="section-title">Master Prompt 1 — Sketch / Line Drawing → 3D Render</div>
+        <div class="full-prompt">
+            <div class="fp-title">Hand Sketch or Line Drawing → Photorealistic Booth (Actual Prompt Used)</div>
+            <div class="fp-body">
+                <span class="tag tag-amber">Image 1</span> = Hand sketch or line drawing of the booth (STRUCTURE MASTER)<br><br>
+
+                Photorealistic 3D render of a modern exhibition booth based on a conceptual sketch.<br><br>
+
+                Transform the sketch into a fully built structure with <strong>realistic geometry, clean edges, and accurate proportions</strong>.<br><br>
+
+                <strong>Booth design:</strong> A <span class="tag">[CLIENT]</span> branded expo stand with <span class="tag">[angular / curved / open]</span> architecture, illuminated fascia, and a reception counter at the front. Integrated lighting within edges and signage. Demo pods and display areas inside the booth. Clean platform flooring with <span class="tag">[carpet / vinyl / timber]</span> finish.<br><br>
+
+                <strong>Materials:</strong> <span class="tag">[e.g. Matte white laminated panels]</span>, <span class="tag">[brushed aluminium framing]</span>, <span class="tag">[soft LED strip lighting]</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Master Prompt 2: Material Interpolation -->
+    <div class="section accent-blue">
+        <div class="section-title">Master Prompt 2 — Material Interpolation (2-Image Method)</div>
+        <div class="full-prompt">
+            <div class="fp-title">Apply Materials from One Photo onto Another Structure (Actual Prompt Used)</div>
+            <div class="fp-body">
+                <span class="tag tag-amber">Image 1</span> = The booth sketch or structure you want to render
+                <span class="tag tag-blue">Image 2</span> = A real booth photo whose materials/finishes you want to apply<br><br>
+
+                <strong>"Generate a photorealistic 3D render of the 1st pic using the materials of the 2nd pic"</strong><br><br>
+
+                The AI uses Image 1 as the structural blueprint and Image 2 as the material palette — extracting the finishes, textures, and lighting style and applying them to the new design. <strong>Use Premium 2K + Enhancer Ready for best results.</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booth Variations -->
+    <div class="section accent-purple">
+        <div class="section-title">Booth Variations — Colour, Material & Branding Swaps</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Colour / Finish Variation</div>
+                <div class="prompt">"Show the same booth in <strong>[navy blue / charcoal / white gloss / timber natural]</strong> — keep the structure and layout identical"</div>
+                <div class="note">Used for Aspen booth variations — generate 3–5 colourways from one render</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Brand Swap — New Client</div>
+                <div class="prompt">"Re-brand this booth for <strong>[new client name]</strong> using their brand colours <strong>[colour 1]</strong> and <strong>[colour 2]</strong> — replace all logos and fascia text"</div>
+                <div class="note">Same physical stand, new client — fast pitch visual without rebuilding</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Remove All Branding</div>
+                <div class="prompt">"Remove all logos, brand text, and signage from this booth. Show a clean, neutral stand ready for re-branding"</div>
+                <div class="note">Creates a blank template for re-use across multiple client pitches</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Panel / Fascia Material</div>
+                <div class="prompt">"Change the booth panels from <strong>[current finish]</strong> to <strong>[gloss white / brushed aluminium / dark timber veneer / fabric wrap]</strong>"</div>
+                <div class="note">Material changes dramatically shift the perceived quality — generate before showing client</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Before → After & Inpainting -->
+    <div class="section accent-teal">
+        <div class="section-title">Before → After & Targeted Fixes</div>
+        <div class="prompt-grid">
+            <div class="prompt-card">
+                <div class="label">Before → After (Site Photo)</div>
+                <div class="prompt">"Take this photo of the <strong>raw or partially built stand</strong> and show it as a <strong>finished, lit, fully dressed exhibition booth</strong>"</div>
+                <div class="note">Turns a bump-in site photo into a finished client-facing visual</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Add Lighting to Existing</div>
+                <div class="prompt">"Add <strong>integrated LED strip lighting to the fascia edges, warm spotlights on the display areas</strong>, and backlit signage panels"</div>
+                <div class="note">Brightens a flat booth photo — clients respond strongly to lit renders</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Inpaint — Fix Specific Area</div>
+                <div class="prompt">"Change only the <strong>[reception counter / rear wall / flooring]</strong> — paint over the area in pink and describe what replaces it"</div>
+                <div class="note">Use inpaint mode for targeted changes without regenerating the full booth</div>
+            </div>
+            <div class="prompt-card">
+                <div class="label">Add People / Activate Space</div>
+                <div class="prompt">"Add <strong>professional visitors in business attire</strong> interacting with the stand — some at reception, some at demo pods, none overcrowding"</div>
+                <div class="note">Activating an empty booth makes proposals feel real — essential for client decks</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Power Tips -->
+    <div class="section accent-green">
+        <div class="section-title">Power Tips</div>
+        <div class="tips-grid">
+            <div class="tip">
+                <div class="tip-icon">1</div>
+                <div><strong>Sketch quality doesn't matter.</strong> Even a rough hand sketch works as Image 1. The AI interprets intent — not line quality.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">2</div>
+                <div><strong>Material interpolation is your superpower.</strong> Upload any booth you love as Image 2 and the AI copies its finishes onto your new design.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">3</div>
+                <div><strong>Name materials specifically.</strong> "Matte white laminated panel" beats "white wall". "Brushed aluminium trim" beats "metal". Precision = accuracy.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">4</div>
+                <div><strong>Premium 2K always</strong> for client-facing booth renders. Fast model for quick internal checks only.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">5</div>
+                <div><strong>Generate a "no branding" base first.</strong> Then apply client branding as a second prompt — easier to pivot when the client changes brief.</div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">6</div>
+                <div><strong>Variations in one session.</strong> V1 = structure. V2 = different colour. V3 = branding applied. Each builds on the last — don't restart.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>Harry The Hirer &bull; ReLook Platform &bull; relook.hthsystems.com.au</span>
+        <span>AI Champion: Christine &bull; Exhibition Sydney</span>
+    </div>
+</body>
+</html>
